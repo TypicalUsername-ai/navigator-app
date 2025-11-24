@@ -12,7 +12,7 @@ export default function CitySelector({
   onCitySelect,
 }: CitySelectorProps) {
   return (
-    <Carousel className="w-full p-2 m-2 bg-blue-100" orientation="vertical">
+    <Carousel className="w-full p-2 m-2" orientation="vertical">
       <CarouselContent>
         {cities.map((name, index) => (
           <CarouselItem key={index}>
