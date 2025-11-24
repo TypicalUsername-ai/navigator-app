@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "npm:@radix-ui/react-slot@^1.2.4": "1.2.4_@types+react@19.2.6_react@19.2.0",
     "npm:@react-router/dev@^7.9.2": "7.9.6_@react-router+serve@7.9.6__react-router@7.9.6___react@19.2.0___react-dom@19.2.0____react@19.2.0__express@4.21.2__typescript@5.9.3__react@19.2.0__react-dom@19.2.0___react@19.2.0_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_typescript@5.9.3_vite@7.2.4__@types+node@22.19.1__picomatch@4.0.3_@babel+core@7.28.5_react@19.2.0_react-dom@19.2.0__react@19.2.0_@types+node@22.19.1",
     "npm:@react-router/node@^7.9.2": "7.9.6_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_typescript@5.9.3_react@19.2.0_react-dom@19.2.0__react@19.2.0",
     "npm:@react-router/serve@^7.9.2": "7.9.6_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_express@4.21.2_typescript@5.9.3_react@19.2.0_react-dom@19.2.0__react@19.2.0",
@@ -1049,6 +1050,27 @@
     },
     "@pkgjs/parseargs@0.11.0": {
       "integrity": "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="
+    },
+    "@radix-ui/react-compose-refs@1.1.2_@types+react@19.2.6_react@19.2.0": {
+      "integrity": "sha512-z4eqJvfiNnFMHIIvXP3CY57y2WJs5g2v3X0zm9mEJkrkNv4rDxu+sg9Jh8EkXyeqBkB7SOcboo9dMVqhyrACIg==",
+      "dependencies": [
+        "@types/react",
+        "react"
+      ],
+      "optionalPeers": [
+        "@types/react"
+      ]
+    },
+    "@radix-ui/react-slot@1.2.4_@types+react@19.2.6_react@19.2.0": {
+      "integrity": "sha512-Jl+bCv8HxKnlTLVrcDE8zTMJ09R9/ukw4qBs/oZClOfoQk/cOTbDn+NceXfV7j09YPVQUryJPHurafcSg6EVKA==",
+      "dependencies": [
+        "@radix-ui/react-compose-refs",
+        "@types/react",
+        "react"
+      ],
+      "optionalPeers": [
+        "@types/react"
+      ]
     },
     "@react-router/dev@7.9.6_@react-router+serve@7.9.6__react-router@7.9.6___react@19.2.0___react-dom@19.2.0____react@19.2.0__express@4.21.2__typescript@5.9.3__react@19.2.0__react-dom@19.2.0___react@19.2.0_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_typescript@5.9.3_vite@7.2.4__@types+node@22.19.1__picomatch@4.0.3_@babel+core@7.28.5_react@19.2.0_react-dom@19.2.0__react@19.2.0_@types+node@22.19.1": {
       "integrity": "sha512-pBkbczGwI+NcZPcK8JPvWGWdjUpT/+okXYp6IXvt7zI3WLxr5hQLLRox5FkLiVxkykbqARO1hk9NRp9KFwJ2sA==",
@@ -3789,6 +3811,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@radix-ui/react-slot@^1.2.4",
         "npm:@react-router/dev@^7.9.2",
         "npm:@react-router/node@^7.9.2",
         "npm:@react-router/serve@^7.9.2",
