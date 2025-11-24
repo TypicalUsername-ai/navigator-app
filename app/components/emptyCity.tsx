@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "~/components/ui/empty";
 
-export default function EmptyCity() {
+export default function EmptyCity({ onLogin, onCitySelect }: EmptyCityProps) {
   return (
     <Empty>
       <EmptyHeader>
@@ -23,8 +23,10 @@ export default function EmptyCity() {
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <Button>Select City</Button>
-          <Button variant="outline">Log In</Button>
+          <Button onClick={onCitySelect}>Select City</Button>
+          <Button onClick={onLogin} variant="outline">
+            Log In
+          </Button>
         </div>
       </EmptyContent>
       <Button
@@ -38,3 +40,8 @@ export default function EmptyCity() {
     </Empty>
   );
 }
+
+export type EmptyCityProps = {
+  onLogin: () => void;
+  onCitySelect: () => void;
+};
