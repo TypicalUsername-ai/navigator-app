@@ -9,6 +9,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "~/components/ui/drawer";
+import TicketCard from "~/components/ticketCard";
 
 export default function TicketDrawer() {
   return (
@@ -19,14 +20,18 @@ export default function TicketDrawer() {
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
-            <DrawerTitle>Move Goal</DrawerTitle>
-            <DrawerDescription>Set your daily activity goal.</DrawerDescription>
+            <DrawerTitle>Your Tickets</DrawerTitle>
+            <DrawerDescription>
+              <p>See you active & periodic tickets</p>
+              <div>
+                <TicketCard />
+              </div>
+            </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">This is a drawer</div>
           <DrawerFooter>
-            <Button>Submit</Button>
             <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">Close</Button>
             </DrawerClose>
           </DrawerFooter>
         </div>
