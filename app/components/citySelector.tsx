@@ -5,14 +5,24 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel";
+import { Button } from "~/components/ui/button";
 
-export default function CitySelector(props: CitySelectorProps) {
+export default function CitySelector({
+  cities,
+  onCitySelect,
+}: CitySelectorProps) {
   return (
-    <Carousel className="w-full max-w-xs">
+    <Carousel className="w-full p-2 m-2" orientation="vertical">
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {cities.map((name, index) => (
           <CarouselItem key={index}>
-            <div className="p-1">aaaa</div>
+            <Button
+              onClick={() => onCitySelect(name)}
+              size="lg"
+              className="p-1 w-full"
+            >
+              {name}
+            </Button>
           </CarouselItem>
         ))}
       </CarouselContent>
@@ -23,5 +33,7 @@ export default function CitySelector(props: CitySelectorProps) {
 }
 
 export type CitySelectorProps = {
+  /** list of cities to display in the selector **/
   cities: String[];
+  onCitySelect: (city: String) => void;
 };

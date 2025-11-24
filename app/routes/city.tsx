@@ -1,15 +1,8 @@
 import { NavLink, useParams } from "react-router";
-import CitySelector from "~/components/citySelector";
+import CitySelectionPage from "~/pages/city/citySelection";
+import ModeSelectionPage from "~/pages/city/modeSelection";
 
 export default function CityRoute() {
   const params = useParams();
-  return params.city === "city" ? (
-    <CitySelector />
-  ) : (
-    <div>
-      <NavLink to="parking"> Parking </NavLink>
-      <NavLink to="transport"> City transport </NavLink>
-      <NavLink to="trains"> Trains </NavLink>
-    </div>
-  );
+  return params.city === "city" ? <CitySelectionPage /> : <ModeSelectionPage />;
 }
