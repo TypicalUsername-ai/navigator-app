@@ -9,9 +9,24 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "~/components/ui/drawer";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel";
+
 import TicketCard from "~/components/ticketCard";
 
 export default function TicketDrawer() {
+  const tickets: TicketCardProps[] = [
+    {
+      title: "All Lines (Zone A)",
+      description: "aaaaa",
+      badges: ["30 days", "student"],
+    },
+  ];
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -23,12 +38,19 @@ export default function TicketDrawer() {
             <DrawerTitle>Your Tickets</DrawerTitle>
             <DrawerDescription>
               <p>See you active & periodic tickets</p>
-              <div>
-                <TicketCard />
-              </div>
             </DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 pb-0">This is a drawer</div>
+          <Carousel>
+            <CarouselContent>
+              {tickets.map((ticket, index) => (
+                <CarouselItem>
+                  <TicketCard {...ticket} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
           <DrawerFooter>
             <DrawerClose asChild>
               <Button variant="outline">Close</Button>
@@ -39,3 +61,7 @@ export default function TicketDrawer() {
     </Drawer>
   );
 }
+
+export type TicketDrawerProps = {
+  tickets: TicketCardProps[];
+};

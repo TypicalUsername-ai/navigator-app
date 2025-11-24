@@ -10,19 +10,34 @@ import {
 } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 
-export default function TicketCard() {
+export default function TicketCard({
+  title,
+  description,
+  badges,
+}: TicketCardProps) {
+  const color = "purple";
   return (
-    <Card className="w-full max-w-sm relative-z-0 bg-linear-to-r from-purple-200 to-purple-400">
+    <Card
+      className={`w-full max-w-sm relative-z-0 bg-linear-to-r from-${color}-200 to-${color}-400`}
+    >
       <CardHeader>
-        <CardTitle className="text-start text-lg">All Lines (Zone A)</CardTitle>
+        <CardTitle className="text-start text-lg">{title}</CardTitle>
         <CardDescription className="text-start text-md">
-          Enter your email below to login to your account
+          {description}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-row-reverse flex-wrap">
-        <Badge className="z-2">30 Days</Badge>
+        {badges.map((badge, index) => (
+          <Badge index={index}>{badge}</Badge>
+        ))}
       </CardContent>
       <CardFooter className="flex-col gap-2"></CardFooter>
     </Card>
   );
 }
+
+export type TicketCardProps = {
+  title: String;
+  description: String;
+  badges: String[];
+};
