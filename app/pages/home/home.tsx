@@ -1,13 +1,14 @@
-import { NavLink } from "react-router";
+import { useNavigate } from "react-router";
 import EmptyCity from "~/components/emptyCity";
 
 export default function Index() {
+  const navigate = useNavigate();
   return (
     <div>
-      <h1> Choose your city </h1>
-
-      <NavLink to="wroclaw"> Wroclaw </NavLink>
-      <EmptyCity />
+      <EmptyCity
+        onLogin={() => navigate("/login")}
+        onCitySelect={() => navigate("/city")}
+      />
     </div>
   );
 }
