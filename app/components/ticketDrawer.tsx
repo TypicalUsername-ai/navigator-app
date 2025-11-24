@@ -22,6 +22,7 @@ import TicketCard from "~/components/ticketCard";
 export default function TicketDrawer() {
   const tickets: TicketCardProps[] = [
     {
+      id: "88888-88-88-88-888888",
       title: "All Lines (Zone A)",
       description: "aaaaa",
       badges: ["30 days", "student"],
@@ -37,14 +38,14 @@ export default function TicketDrawer() {
           <DrawerHeader>
             <DrawerTitle>Your Tickets</DrawerTitle>
             <DrawerDescription>
-              <p>See you active & periodic tickets</p>
+              See you active & periodic tickets
             </DrawerDescription>
           </DrawerHeader>
           <Carousel>
             <CarouselContent>
               {tickets.map((ticket, index) => (
-                <CarouselItem>
-                  <TicketCard {...ticket} />
+                <CarouselItem key={index}>
+                  <TicketCard {...ticket} key={index} />
                 </CarouselItem>
               ))}
             </CarouselContent>
