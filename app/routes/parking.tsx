@@ -1,6 +1,8 @@
 import ParkingHeader from "~/components/ParkingHeader"
-import {useState} from "react";
+import {useState, useMemo} from "react";
 import SearchBar from "~/components/ParkingSearchBar";
+import ParkingMap from "~/components/ParkingMap";
+import ParkingSidebar from "~/components/ParkingSidebar";
 
 const PARKING_LOCATIONS = [
     {
@@ -65,13 +67,37 @@ const PARKING_LOCATIONS = [
     },
 ]
 
-export default function Parking() {
+export default function ParkingPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedParking, setSelectedParking] = useState<(typeof PARKING_LOCATIONS)[0] | null>(null)
+
+    const filteredParking = useMemo(() => {
+        return PARKING_LOCATIONS.filter(
+            (parking) =>
+                parking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                parking.address.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+    }, [searchQuery])
+
     return (
-        <>
+        <div className="min-h-screen bg-white flex flex-col">
             <ParkingHeader />
-            <SearchBar value={searchQuery} onChange={setSearchQuery} ></SearchBar>
-        </>
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+            <div className="flex-1 flex gap-0 overflow-hidden">
+                <div className="flex-1 h-screen">
+                    <ParkingMap
+                        parkings={filteredParking}
+                        selectedParking={selectedParking}
+                        onSelectParking={setSelectedParking}
+                    />
+                </div>
+                <ParkingSidebar
+                    parkings={filteredParking}
+                    selectedParking={selectedParking}
+                    onSelectParking={setSelectedParking}
+                />
+            </div>
+        </div>
     )
 }
