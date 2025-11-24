@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef } from "react"
+import {useEffect, useRef} from "react"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
@@ -20,7 +20,7 @@ interface ParkingMapProps {
     onSelectParking: (parking: Parking) => void
 }
 
-export default function ParkingMap({ parkings, selectedParking, onSelectParking }: ParkingMapProps) {
+export default function ParkingMap({parkings, selectedParking, onSelectParking}: ParkingMapProps) {
     const mapRef = useRef<L.Map | null>(null)
     const markersRef = useRef<Map<number, L.Marker>>(new Map())
     const containerRef = useRef<HTMLDivElement>(null)
@@ -28,10 +28,8 @@ export default function ParkingMap({ parkings, selectedParking, onSelectParking 
     useEffect(() => {
         if (!containerRef.current || mapRef.current) return
 
-        // Create map
         mapRef.current = L.map(containerRef.current).setView([40.7648, -73.9776], 14)
 
-        // Add OpenStreetMap tiles
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "&copy; OpenStreetMap contributors",
             maxZoom: 19,
@@ -48,18 +46,15 @@ export default function ParkingMap({ parkings, selectedParking, onSelectParking 
     useEffect(() => {
         if (!mapRef.current) return
 
-        // Clear existing markers
         markersRef.current.forEach((marker) => marker.remove())
         markersRef.current.clear()
 
-        // Add new markers for each parking location
         parkings.forEach((parking) => {
             const availabilityPercent = parking.available / parking.total
 
             const markerColor =
                 selectedParking?.id === parking.id ? "black" : availabilityPercent > 0.3 ? "#6b7280" : "#1f2937"
 
-            // Create custom marker HTML
             const html = `
         <div style="
           width: 32px;
@@ -102,7 +97,7 @@ export default function ParkingMap({ parkings, selectedParking, onSelectParking 
 
     return (
         <div className="w-full h-full flex flex-col">
-            <div ref={containerRef} className="flex-1 bg-white rounded-lg shadow-sm" style={{ minHeight: "400px" }} />
+            <div ref={containerRef} className="flex-1 bg-white rounded-lg shadow-sm" style={{minHeight: "400px"}}/>
         </div>
     )
 }

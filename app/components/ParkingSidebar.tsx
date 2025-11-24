@@ -34,14 +34,15 @@ export default function ParkingSidebar({ parkings, selectedParking, onSelectPark
     }
 
     return (
-        <div className="w-80 bg-white border-l border-gray-200 overflow-hidden flex flex-col">
+        <div className="w-full bg-white border-l border-gray-200 border-t lg:border-t-0 overflow-hidden flex flex-col h-full">
             {/* Header */}
-            <div className="bg-black text-white px-6 py-4 border-b border-gray-200">
-                <h2 className="font-semibold text-lg">Parking Locations</h2>
-                <p className="text-sm text-gray-300">{parkings.length} available</p>
+            <div className="bg-black text-white px-4 lg:px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <div>
+                    <h2 className="font-semibold text-lg">Parking Locations</h2>
+                    <p className="text-sm text-gray-300">{parkings.length} available</p>
+                </div>
             </div>
 
-            {/* List */}
             <div className="flex-1 overflow-y-auto">
                 {parkings.length === 0 ? (
                     <div className="p-6 text-center text-gray-400">

@@ -6,7 +6,7 @@ export default function ParkingHeader() {
                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                         <span className="text-black font-bold text-lg">P</span>
                     </div>
-                    <h1 className="text-2xl font-bold">ParkFinder</h1>
+                    <h1 className="text-2xl font-bold">Parking</h1>
                 </div>
                 <p className="text-gray-300 text-sm mt-1">Find and reserve your parking spot</p>
             </div>
