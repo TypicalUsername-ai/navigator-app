@@ -1,8 +1,7 @@
 import ParkingHeader from "~/components/ParkingHeader"
-import {useState, useMemo} from "react";
-import SearchBar from "~/components/ParkingSearchBar";
+import {useState} from "react";
 import ParkingMap from "~/components/ParkingMap";
-import ParkingSidebar from "~/components/ParkingSidebar";
+import ParkingTicketForm from "~/components/ParkingTicketForm";
 
 const PARKING_LOCATIONS = [
     {
@@ -68,42 +67,27 @@ const PARKING_LOCATIONS = [
 ]
 
 export default function ParkingPage() {
-    const [searchQuery, setSearchQuery] = useState("")
     const [selectedParking, setSelectedParking] = useState<(typeof PARKING_LOCATIONS)[0] | null>(null)
-
-    const filteredParking = useMemo(() => {
-        return PARKING_LOCATIONS.filter(
-            (parking) =>
-                parking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                parking.address.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-    }, [searchQuery])
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
             <ParkingHeader />
-            <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
             <div className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
-                {/* Map takes full width on mobile, flex-1 on desktop */}
                 <div className="h-96 mb-4 lg:h-auto lg:flex-1">
                     <ParkingMap
-                        parkings={filteredParking}
+                        parkings={PARKING_LOCATIONS}
                         selectedParking={selectedParking}
                         onSelectParking={setSelectedParking}
                     />
                 </div>
 
-                {/* Sidebar below map on mobile, side panel on desktop */}
-                <div className="flex-1 lg:w-80 lg:flex-none overflow-y-auto">
-                    <ParkingSidebar
-                        parkings={filteredParking}
-                        selectedParking={selectedParking}
-                        onSelectParking={setSelectedParking}
-                    />
+                <div className="flex-1 lg:w-96 lg:flex-none overflow-y-auto">
+                    <ParkingTicketForm selectedParking={selectedParking} />
                 </div>
             </div>
         </div>
     )
 }
+
 
