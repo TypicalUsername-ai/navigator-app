@@ -13,7 +13,7 @@ export default function CitySelectionPage() {
     "Bydgoszcz",
   ];
   return (
-    <div className="flex flex-col flex-grow items-center">
+    <div className="h-screen w-screen flex flex-col flex-grow items-center">
       <h1 className="w-full h-24 p-2 m-2"> please select you city </h1>
       <CitySelector
         cities={cities}

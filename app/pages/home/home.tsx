@@ -4,7 +4,7 @@ import EmptyCity from "~/components/emptyCity";
 export default function Index() {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="h-screen w-screen flex flex-col items-center">
       <EmptyCity
         onLogin={() => navigate("/login")}
         onCitySelect={() => navigate("/city")}
