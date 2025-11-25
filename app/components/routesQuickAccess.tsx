@@ -23,7 +23,7 @@ export default function RoutesQuickAccess({
   onRoutesExpand,
 }: RoutesQuickAccessProps) {
   return (
-    <Card className="gap-1 p-2">
+    <Card className="gap-1 p-2 w-full max-w-96">
       <CardHeader>
         <CardDescription className="text-start text-md">
           Popular lines

@@ -22,10 +22,14 @@ export default function CitySelector({
       <CarouselContent className="h-2/5 max-h-96">
         {cities.map((name, index) => (
           <CarouselItem
-            className="basis-1/6 pl-1 p-1 flex flex-col justify-center"
+            className="basis-1/6 pl-1 flex flex-col items-center"
             key={index}
           >
-            <Button onClick={() => onCitySelect(name)} size="lg">
+            <Button
+              onClick={() => onCitySelect(name)}
+              className="p-1 w-3/5 max-w-96"
+              size="lg"
+            >
               {name}
             </Button>
           </CarouselItem>

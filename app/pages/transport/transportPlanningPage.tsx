@@ -9,7 +9,7 @@ export default function TransportPlanningPage({
   onRoutesExpand,
 }: TransportPlanningPageParams) {
   return (
-    <div className="flex flex-col gap-3 align-center space-between">
+    <div className="flex flex-col gap-3 h-screen w-screen items-center justify-center">
       <TransportRouteForm city={city} />
       <RoutesQuickAccess
         routes={recentRoutes}

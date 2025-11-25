@@ -10,7 +10,7 @@ import {
 
 export default function TicketsQuickAccess() {
   return (
-    <Card>
+    <Card className="w-full max-w-96">
       <CardHeader>
         <CardTitle className="text-start text-lg"></CardTitle>
         <CardDescription className="text-start text-md"></CardDescription>
