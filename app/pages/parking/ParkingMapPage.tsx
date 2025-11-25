@@ -2,7 +2,17 @@ import {useState} from "react";
 import ParkingMap from "~/components/ParkingMap";
 import ParkingTicketForm from "~/components/ParkingTicketForm";
 
-const PARKING_LOCATIONS = [
+interface ParkingLocation {
+    id: number
+    name: string
+    address: string
+    available: number
+    total: number
+    price: number
+    lat: number
+    lng: number
+}
+const PARKING_LOCATIONS: ParkingLocation[] = [
     {
         id: 1,
         name: "Downtown Garage",

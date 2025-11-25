@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ParkingMapPage from "~/pages/parking/ParkingMapPage";
 import ParkingTicketPage from "~/pages/parking/ParkingTicketPage";
-import {ParkingHeader} from "~/components/ParkingHeader";
+import ParkingHeader from "~/components/ParkingHeader";
 
 export default function ParkingPage() {
     const [viewAllTickets, setViewAllTickets] = useState(false)

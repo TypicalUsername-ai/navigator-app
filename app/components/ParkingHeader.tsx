@@ -7,7 +7,7 @@ interface ParkingHeaderProps {
     subtitle: string
 }
 
-export function ParkingHeader({ isViewingTickets, onToggleView, title, subtitle}: ParkingHeaderProps) {
+export default function ParkingHeader({ isViewingTickets, onToggleView, title, subtitle}: ParkingHeaderProps) {
     return (
         <header className="bg-black text-white shadow-sm border-b border-gray-200">
             <div className="max-w-7xl mx-auto px-6 py-4">
