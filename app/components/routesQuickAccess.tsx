@@ -23,7 +23,7 @@ export default function RoutesQuickAccess({
   onRoutesExpand,
 }: RoutesQuickAccessProps) {
   return (
-    <Card>
+    <Card className="gap-1 p-2">
       <CardHeader>
         <CardDescription className="text-start text-md">
           Popular lines
@@ -41,7 +41,11 @@ export default function RoutesQuickAccess({
         </Carousel>
       </CardContent>
       <CardAction>
-        <Button onClick={onRoutesExpand} variant="outline">
+        <Button
+          onClick={onRoutesExpand}
+          className="text-sm m-2"
+          variant="outline"
+        >
           other routes
         </Button>
       </CardAction>
