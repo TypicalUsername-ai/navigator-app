@@ -1,0 +1,84 @@
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import TicketCard, { type TicketCardProps } from "@/components/ticketCard";
+
+export default function TicketDrawer() {
+  const tickets: TicketCardProps[] = [
+    {
+      id: "88888-88-88-88-888888",
+      title: "All Lines (Zone A)",
+      description:
+        "allows travel on all lines for 30 consecutive calendar days starting on the ticket-indicated date.",
+      badges: [
+        { text: "Tram/Bus", color: "fuchsia" },
+        { text: "30 days", color: "teal" },
+        { text: "student", color: "blue" },
+      ],
+    },
+    {
+      id: "11111-88-88-88-888888",
+      title: "Single Fare (All Zones)",
+      description:
+        "allows travel on validate line starting on the ticket-indicated date.",
+      badges: [
+        { text: "Tram/Bus", color: "fuchsia" },
+        { text: "Single", color: "teal" },
+        { text: "student", color: "blue" },
+      ],
+    },
+  ];
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button variant="outline">My tickets</Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="mx-auto w-full max-w-sm">
+          <DrawerHeader>
+            <DrawerTitle>Your Tickets</DrawerTitle>
+            <DrawerDescription>
+              See you active & periodic tickets
+            </DrawerDescription>
+          </DrawerHeader>
+          <Carousel>
+            <CarouselContent className="p-2">
+              {tickets.map((ticket, index) => (
+                <CarouselItem className="ml-1" key={index}>
+                  <TicketCard {...ticket} key={index} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
+export type TicketDrawerProps = {
+  tickets: TicketCardProps[];
+};
