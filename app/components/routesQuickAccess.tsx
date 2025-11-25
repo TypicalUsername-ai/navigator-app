@@ -25,9 +25,7 @@ export default function RoutesQuickAccess({
   return (
     <Card className="gap-1 p-2 w-full max-w-96">
       <CardHeader>
-        <CardDescription className="text-start text-md">
-          Popular lines
-        </CardDescription>
+        <CardTitle className="text-start">Recent lines</CardTitle>
       </CardHeader>
       <CardContent>
         <Carousel className="" orientation="horizontal">
