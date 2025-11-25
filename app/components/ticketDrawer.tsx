@@ -24,17 +24,30 @@ export default function TicketDrawer() {
     {
       id: "88888-88-88-88-888888",
       title: "All Lines (Zone A)",
-      description: "aaaaa",
+      description:
+        "allows travel on all lines for 30 consecutive calendar days starting on the ticket-indicated date.",
       badges: [
-        { text: "30 days", color: "bg-teal-500" },
-        { text: "student", color: "bg-blue-500" },
+        { text: "Tram/Bus", color: "fuchsia" },
+        { text: "30 days", color: "teal" },
+        { text: "student", color: "blue" },
+      ],
+    },
+    {
+      id: "11111-88-88-88-888888",
+      title: "Single Fare (All Zones)",
+      description:
+        "allows travel on validate line starting on the ticket-indicated date.",
+      badges: [
+        { text: "Tram/Bus", color: "fuchsia" },
+        { text: "Single", color: "teal" },
+        { text: "student", color: "blue" },
       ],
     },
   ];
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline">Open Drawer</Button>
+        <Button variant="outline">My tickets</Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
@@ -45,9 +58,9 @@ export default function TicketDrawer() {
             </DrawerDescription>
           </DrawerHeader>
           <Carousel>
-            <CarouselContent>
+            <CarouselContent className="p-2">
               {tickets.map((ticket, index) => (
-                <CarouselItem key={index}>
+                <CarouselItem className="ml-1" key={index}>
                   <TicketCard {...ticket} key={index} />
                 </CarouselItem>
               ))}
