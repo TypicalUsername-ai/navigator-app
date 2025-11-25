@@ -33,7 +33,6 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
         }
 
         setIsBooking(true)
-        // Simulate booking process
         await new Promise((resolve) => setTimeout(resolve, 1500))
         setIsBooking(false)
 
@@ -41,18 +40,15 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
             `Ticket booked!\nVehicle: ${plateNumber}\nLocation: ${selectedParking.name}\nDuration: ${parkingHours} hour(s)\nTotal: $${totalCost.toFixed(2)}`,
         )
 
-        // Reset form
         setPlateNumber("")
         setParkingHours(1)
     }
 
     return (
         <div className="w-full bg-white border-l border-gray-200 border-t lg:border-t-0 p-4 lg:p-6 flex flex-col h-full">
-            {/* Header */}
             <h2 className="text-2xl font-bold text-black mb-2">Buy Parking Ticket</h2>
             <p className="text-gray-600 mb-6">Enter your vehicle details and select duration</p>
 
-            {/* Selected Parking Info */}
             {selectedParking ? (
                 <Card className="mb-6 border-gray-200 bg-gray-50">
                     <CardHeader className="pb-3">
@@ -81,9 +77,7 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
                 </Card>
             )}
 
-            {/* Form Inputs */}
             <div className="space-y-6 flex-1">
-                {/* Vehicle Plate Number */}
                 <div>
                     <label className="block text-sm font-semibold text-black mb-2">Vehicle Plate Number</label>
                     <Input
@@ -95,7 +89,6 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
                     <p className="text-xs text-gray-500 mt-1">Enter your vehicle license plate</p>
                 </div>
 
-                {/* Parking Duration */}
                 <div>
                     <label className="block text-sm font-semibold text-black mb-2">Parking Duration (Hours)</label>
                     <div className="flex items-center gap-2">
@@ -127,7 +120,6 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
                     <p className="text-xs text-gray-500 mt-1">Choose between 1-24 hours</p>
                 </div>
 
-                {/* Cost Summary */}
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-200">
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Duration:</span>
@@ -147,7 +139,6 @@ export default function ParkingTicketForm({ selectedParking }: ParkingTicketForm
                 </div>
             </div>
 
-            {/* Park Button */}
             <Button
                 onClick={handleParkButtonClick}
                 disabled={!selectedParking || isBooking}
