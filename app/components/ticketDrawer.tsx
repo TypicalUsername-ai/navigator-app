@@ -25,7 +25,10 @@ export default function TicketDrawer() {
       id: "88888-88-88-88-888888",
       title: "All Lines (Zone A)",
       description: "aaaaa",
-      badges: ["30 days", "student"],
+      badges: [
+        { text: "30 days", color: "bg-teal-500" },
+        { text: "student", color: "bg-blue-500" },
+      ],
     },
   ];
   return (

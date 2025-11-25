@@ -25,10 +25,10 @@ export default function TicketCard({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-row-reverse flex-wrap">
-        {badges.map((badge, index) => (
-          <Badge key={index}>{badge}</Badge>
-        ))}
+      <CardContent className="flex flex-row-reverse gap-1 flex-wrap">
+        {badges.map((badge, index) => {
+          return <Badge key={index}>{badge.text}</Badge>;
+        })}
       </CardContent>
       <CardFooter className="flex-col gap-2"></CardFooter>
     </Card>
@@ -39,5 +39,10 @@ export type TicketCardProps = {
   id: String;
   title: String;
   description: String;
-  badges: String[];
+  badges: BadgeData[];
+};
+
+export type BadgeData = {
+  text: String;
+  color: String;
 };
