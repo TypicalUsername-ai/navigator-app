@@ -12,22 +12,25 @@ export default function CitySelector({
   onCitySelect,
 }: CitySelectorProps) {
   return (
-    <Carousel className="w-full p-2 m-2" orientation="vertical">
-      <CarouselContent>
+    <Carousel
+      className="w-full m-2 max-h-96"
+      orientation="vertical"
+      opts={{ align: "start", loop: true }}
+    >
+      <CarouselPrevious />
+      <CarouselNext />
+      <CarouselContent className="h-2/5 max-h-96">
         {cities.map((name, index) => (
-          <CarouselItem key={index}>
-            <Button
-              onClick={() => onCitySelect(name)}
-              size="lg"
-              className="p-1 w-full"
-            >
+          <CarouselItem
+            className="basis-1/6 pl-1 p-1 flex flex-col justify-center"
+            key={index}
+          >
+            <Button onClick={() => onCitySelect(name)} size="lg">
               {name}
             </Button>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
     </Carousel>
   );
 }
