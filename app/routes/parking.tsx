@@ -1,6 +1,6 @@
 
-import ParkingMapPage from "~/pages/parking/ParkingMapPage";
+import ParkingPage from "~/pages/parking/ParkingPage";
 
 export default function ParkingRoute() {
-    return <ParkingMapPage />
+    return <ParkingPage />
 }

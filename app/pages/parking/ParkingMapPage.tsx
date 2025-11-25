@@ -1,4 +1,3 @@
-import ParkingHeader from "~/components/ParkingHeader"
 import {useState} from "react";
 import ParkingMap from "~/components/ParkingMap";
 import ParkingTicketForm from "~/components/ParkingTicketForm";
@@ -72,8 +71,6 @@ export default function ParkingMapPage() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
-            <ParkingHeader />
-
             <div className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
                 <div className="h-96 mb-4 lg:h-auto lg:flex-1">
                     <ParkingMap
