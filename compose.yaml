@@ -1,0 +1,20 @@
+services:
+  frontend:
+    image: node:24-alpine
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    entrypoint: "/app/entrypoint.sh"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 1G
+
+volumes:
+  node_modules:
