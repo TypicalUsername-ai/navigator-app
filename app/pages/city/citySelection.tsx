@@ -32,7 +32,7 @@ export default function CitySelectionPage() {
   ];
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden">
+    <div className="h-screen w-screen flex flex-col items-center justify-center overflow-scroll">
       <h1 className="h-24 p-2 m-2 font-semibold text-2xl">
         please select you city
       </h1>
