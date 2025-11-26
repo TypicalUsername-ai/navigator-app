@@ -7,10 +7,11 @@ export default function TransportPlanningPage({
   recentRoutes,
   onRouteClick,
   onRoutesExpand,
+  onSearch,
 }: TransportPlanningPageParams) {
   return (
-    <div className="flex flex-col gap-3 h-screen w-screen items-center justify-center">
-      <TransportRouteForm city={city} />
+    <div className="flex flex-col gap-6 p-3 h-screen w-screen items-center justify-start">
+      <TransportRouteForm city={city} onSearch={onSearch} />
       <RoutesQuickAccess
         routes={recentRoutes}
         onRouteClick={onRouteClick}
@@ -26,4 +27,5 @@ export type TransportPlanningPageParams = {
   recentRoutes: String[];
   onRouteClick: (route: String) => void;
   onRoutesExpand: () => void;
+  onSearch: (from, to, time) => void;
 };
