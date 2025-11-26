@@ -52,7 +52,7 @@ export default function RoutesQuickAccess({
 }
 
 export type RoutesQuickAccessProps = {
-  routes: String[];
-  onRouteClick: (route: String) => void;
+  routes: string[];
+  onRouteClick: (route: string) => void;
   onRoutesExpand: () => void;
 };

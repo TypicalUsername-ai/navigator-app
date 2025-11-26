@@ -48,13 +48,13 @@ export default function TicketCard({
 }
 
 export type TicketCardProps = {
-  id: String;
-  title: String;
-  description: String;
+  id: string;
+  title: string;
+  description: string;
   badges: BadgeData[];
 };
 
 export type BadgeData = {
-  text: String;
+  text: string;
   color: "red" | "blue" | "teal" | "yellow" | "lime" | "zinc" | "fuchsia";
 };

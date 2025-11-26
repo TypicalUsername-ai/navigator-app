@@ -2,7 +2,7 @@ import TransportPlanningPage from "~/pages/transport/transportPlanningPage";
 import { useParams, useNavigate, createSearchParams } from "react-router";
 
 export default function TransportRoute() {
-  const encodeSearch = (from, to, time) => {
+  const encodeSearch = (from: string, to: string, time: string) => {
     let ps = createSearchParams({
       from: from,
       to: to,

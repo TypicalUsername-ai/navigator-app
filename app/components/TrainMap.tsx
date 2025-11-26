@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import L, { LatLngExpression, Map as LeafletMap } from "leaflet";
+import L, { type LatLngExpression, Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 type Marker = { position: LatLngExpression; label?: string };
@@ -15,7 +15,9 @@ export default function TrainMap({
 }) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const instanceRef = useRef<LeafletMap | null>(null);
-  const layerRef = useRef<{ markers: L.LayerGroup; path: L.Polyline } | null>(null);
+  const layerRef = useRef<{ markers: L.LayerGroup; path: L.Polyline } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -28,7 +30,9 @@ export default function TrainMap({
       }).addTo(map);
 
       const markersLayer = L.layerGroup().addTo(map);
-      const pathLayer = L.polyline([], { color: "#2563eb", weight: 4 }).addTo(map);
+      const pathLayer = L.polyline([], { color: "#2563eb", weight: 4 }).addTo(
+        map,
+      );
       layerRef.current = { markers: markersLayer, path: pathLayer };
     }
   }, [center]);
@@ -41,8 +45,10 @@ export default function TrainMap({
 
     const icon = L.icon({
       iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+      shadowUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
@@ -57,9 +63,16 @@ export default function TrainMap({
 
     pathLayer.setLatLngs(path);
     if (path.length) {
-      instanceRef.current.fitBounds(L.latLngBounds(path), { padding: [20, 20] });
+      instanceRef.current.fitBounds(L.latLngBounds(path), {
+        padding: [20, 20],
+      });
     }
   }, [markers, path]);
 
-  return <div ref={mapRef} className="w-full h-80 rounded-md overflow-hidden border" />;
+  return (
+    <div
+      ref={mapRef}
+      className="w-full h-80 rounded-md overflow-hidden border"
+    />
+  );
 }

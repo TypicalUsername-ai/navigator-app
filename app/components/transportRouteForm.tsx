@@ -25,8 +25,8 @@ export default function TransportRouteForm({
   onSearch,
 }: TransportRouteFormParams) {
   const now = new Date();
-  const [from, setFrom] = useState(null);
-  const [to, setTo] = useState(null);
+  const [from, setFrom] = useState<string>();
+  const [to, setTo] = useState<string>();
   const [time, setTime] = useState(now.toLocaleTimeString());
   return (
     <Card className="border-3 border-dashed border-zinc-400 w-full max-w-96">
@@ -73,6 +73,8 @@ export default function TransportRouteForm({
 }
 
 export type TransportRouteFormParams = {
-  city: String;
-  onSearch: (from, to, time) => void;
+  city: string;
+  onSearch: RouteSearchFn;
 };
+
+export type RouteSearchFn = (from: string, to: string, time: string) => void;

@@ -41,6 +41,6 @@ export default function CitySelector({
 
 export type CitySelectorProps = {
   /** list of cities to display in the selector **/
-  cities: String[];
-  onCitySelect: (city: String) => void;
+  cities: string[];
+  onCitySelect: (city: string) => void;
 };

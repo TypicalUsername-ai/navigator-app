@@ -1,4 +1,6 @@
-import TransportRouteForm from "~/components/transportRouteForm";
+import TransportRouteForm, {
+  type RouteSearchFn,
+} from "~/components/transportRouteForm";
 import RoutesQuickAccess from "~/components/routesQuickAccess";
 import TicketsQuickAccess from "~/components/ticketsQuickAccess";
 
@@ -23,9 +25,9 @@ export default function TransportPlanningPage({
 }
 
 export type TransportPlanningPageParams = {
-  city: String;
-  recentRoutes: String[];
-  onRouteClick: (route: String) => void;
+  city: string;
+  recentRoutes: string[];
+  onRouteClick: (route: string) => void;
   onRoutesExpand: () => void;
-  onSearch: (from, to, time) => void;
+  onSearch: RouteSearchFn;
 };
