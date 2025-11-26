@@ -17,7 +17,7 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel";
 
-import TicketCard from "~/components/ticketCard";
+import TicketCard, { type TicketCardProps } from "~/components/ticketCard";
 
 export default function TicketDrawer() {
   const tickets: TicketCardProps[] = [
