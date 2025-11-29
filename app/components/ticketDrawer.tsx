@@ -30,7 +30,6 @@ export default function TicketDrawer() {
       description:
         "allows travel on all lines for 30 consecutive calendar days starting on the ticket-indicated date.",
       badges: [
-        { text: "Tram/Bus", color: "fuchsia" },
         { text: "30 days", color: "teal" },
         { text: "student", color: "blue" },
       ],
@@ -44,7 +43,6 @@ export default function TicketDrawer() {
       description:
         "allows travel on validate line starting on the ticket-indicated date.",
       badges: [
-        { text: "Tram/Bus", color: "fuchsia" },
         { text: "Single", color: "teal" },
         { text: "student", color: "blue" },
       ],
@@ -58,7 +56,6 @@ export default function TicketDrawer() {
       description:
         "allows travel on validate line starting on the ticket-indicated date.",
       badges: [
-        { text: "Tram/Bus", color: "fuchsia" },
         { text: "Single", color: "teal" },
         { text: "student", color: "blue" },
       ],

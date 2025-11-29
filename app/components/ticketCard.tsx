@@ -36,11 +36,9 @@ export default function TicketCard({
           <CardTitle className="text-start text-lg">{title}</CardTitle>
           <TicketData type={type} line={line} validThrough={validThrough} />
         </div>
-        <CardDescription className="text-start text-md">
-          {description}
-        </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-row-reverse gap-1 flex-wrap">
+      <CardContent className="text-start text-md">{description}</CardContent>
+      <CardFooter className="flex flex-row-reverse gap-1 flex-wrap">
         {badges.map((badge, index) => {
           return (
             <Badge className={colors[badge.color]} key={index}>
@@ -48,8 +46,7 @@ export default function TicketCard({
             </Badge>
           );
         })}
-      </CardContent>
-      <CardFooter className="flex-col gap-2"></CardFooter>
+      </CardFooter>
     </Card>
   );
 }
@@ -71,16 +68,14 @@ export type BadgeData = {
   color: "red" | "blue" | "teal" | "yellow" | "lime" | "zinc" | "fuchsia";
 };
 
-function TicketData({
-  type,
-  line,
-  validThrough,
-}: {
-  TicketType;
-  string;
-  Date;
-}) {
-  const timeLeft = validThrough - Date.now();
+type TicketDataProps = {
+  type: TicketType;
+  line: string;
+  validThrough: Date;
+};
+
+function TicketData({ type, line, validThrough }: TicketDataProps) {
+  const timeLeft = validThrough.getTime() - Date.now();
   if (type == "transport") {
     return (
       <div className="flex flex-row gap-2">
