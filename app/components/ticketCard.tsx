@@ -30,7 +30,7 @@ export default function TicketCard({
     fuchsia: "bg-fuchsia-600",
   };
   return (
-    <Card className="w-full h-full max-w-sm relative-z-0 bg-linear-to-tr from-blue-200 via-purple-200 to-blue-400 gap-1">
+    <Card className="w-full h-full max-w-sm relative-z-0 bg-linear-to-tr from-blue-200 via-purple-200 to-blue-400 gap-1 justify-between">
       <CardHeader>
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-start text-lg">{title}</CardTitle>
