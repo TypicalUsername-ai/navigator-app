@@ -24,6 +24,9 @@ export default function TicketDrawer() {
     {
       id: "88888-88-88-88-888888",
       title: "All Lines (Zone A)",
+      line: "107",
+      type: "transport",
+      validThrough: new Date(),
       description:
         "allows travel on all lines for 30 consecutive calendar days starting on the ticket-indicated date.",
       badges: [
@@ -34,7 +37,24 @@ export default function TicketDrawer() {
     },
     {
       id: "11111-88-88-88-888888",
-      title: "Single Fare (All Zones)",
+      title: "Wroclaw Gl to Krakow Gl",
+      line: "IC3610",
+      type: "train",
+      validThrough: new Date(),
+      description:
+        "allows travel on validate line starting on the ticket-indicated date.",
+      badges: [
+        { text: "Tram/Bus", color: "fuchsia" },
+        { text: "Single", color: "teal" },
+        { text: "student", color: "blue" },
+      ],
+    },
+    {
+      id: "11111-88-88-88-888888",
+      title: "Parking NFM",
+      line: "AAA-12345",
+      type: "parking",
+      validThrough: new Date(),
       description:
         "allows travel on validate line starting on the ticket-indicated date.",
       badges: [
