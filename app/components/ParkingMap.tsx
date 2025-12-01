@@ -1,61 +1,71 @@
-"use client"
-import {useEffect, useRef} from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
+import { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface Parking {
-    id: number
-    name: string
-    address: string
-    lat: number
-    lng: number
-    available: number
-    total: number
-    price: number
+  id: number;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  available: number;
+  total: number;
+  price: number;
 }
 
 interface ParkingMapProps {
-    parkings: Parking[]
-    selectedParking: Parking | null
-    onSelectParking: (parking: Parking) => void
+  parkings: Parking[];
+  selectedParking: Parking | null;
+  onSelectParking: (parking: Parking) => void;
 }
 
-export default function ParkingMap({parkings, selectedParking, onSelectParking}: ParkingMapProps) {
-    const mapRef = useRef<L.Map | null>(null)
-    const markersRef = useRef<Map<number, L.Marker>>(new Map())
-    const containerRef = useRef<HTMLDivElement>(null)
+export default function ParkingMap({
+  parkings,
+  selectedParking,
+  onSelectParking,
+}: ParkingMapProps) {
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<Map<number, L.Marker>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (!containerRef.current || mapRef.current) return
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
 
-        mapRef.current = L.map(containerRef.current).setView([40.7648, -73.9776], 14)
+    mapRef.current = L.map(containerRef.current).setView(
+      [40.7648, -73.9776],
+      14,
+    );
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: "&copy; OpenStreetMap contributors",
-            maxZoom: 19,
-        }).addTo(mapRef.current)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+      maxZoom: 19,
+    }).addTo(mapRef.current);
 
-        return () => {
-            if (mapRef.current) {
-                mapRef.current.remove()
-                mapRef.current = null
-            }
-        }
-    }, [])
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
 
-    useEffect(() => {
-        if (!mapRef.current) return
+  useEffect(() => {
+    if (!mapRef.current) return;
 
-        markersRef.current.forEach((marker) => marker.remove())
-        markersRef.current.clear()
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current.clear();
 
-        parkings.forEach((parking) => {
-            const availabilityPercent = parking.available / parking.total
+    parkings.forEach((parking) => {
+      const availabilityPercent = parking.available / parking.total;
 
-            const markerColor =
-                selectedParking?.id === parking.id ? "black" : availabilityPercent > 0.3 ? "#6b7280" : "#1f2937"
+      const markerColor =
+        selectedParking?.id === parking.id
+          ? "black"
+          : availabilityPercent > 0.3
+            ? "#6b7280"
+            : "#1f2937";
 
-            const html = `
+      const html = `
         <div style="
           width: 32px;
           height: 32px;
@@ -73,31 +83,35 @@ export default function ParkingMap({parkings, selectedParking, onSelectParking}:
         ">
           ${parking.available}
         </div>
-      `
+      `;
 
-            const marker = L.marker([parking.lat, parking.lng], {
-                icon: L.divIcon({
-                    html,
-                    iconSize: [32, 32],
-                    className: "",
-                }),
-            })
-                .addTo(mapRef.current!)
-                .on("click", () => onSelectParking(parking))
+      const marker = L.marker([parking.lat, parking.lng], {
+        icon: L.divIcon({
+          html,
+          iconSize: [32, 32],
+          className: "",
+        }),
+      })
+        .addTo(mapRef.current!)
+        .on("click", () => onSelectParking(parking));
 
-            markersRef.current.set(parking.id, marker)
-        })
-    }, [parkings, selectedParking, onSelectParking])
+      markersRef.current.set(parking.id, marker);
+    });
+  }, [parkings, selectedParking, onSelectParking]);
 
-    useEffect(() => {
-        if (selectedParking && mapRef.current) {
-            mapRef.current.panTo([selectedParking.lat, selectedParking.lng])
-        }
-    }, [selectedParking])
+  useEffect(() => {
+    if (selectedParking && mapRef.current) {
+      mapRef.current.panTo([selectedParking.lat, selectedParking.lng]);
+    }
+  }, [selectedParking]);
 
-    return (
-        <div className="w-full h-full flex flex-col">
-            <div ref={containerRef} className="flex-1 bg-white rounded-lg shadow-sm" style={{minHeight: "400px"}}/>
-        </div>
-    )
+  return (
+    <div className="flex h-full w-full flex-col">
+      <div
+        ref={containerRef}
+        className="flex-1 rounded-lg bg-white shadow-sm"
+        style={{ minHeight: "400px" }}
+      />
+    </div>
+  );
 }

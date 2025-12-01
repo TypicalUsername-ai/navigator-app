@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   Card,
@@ -56,17 +54,17 @@ export default function ParkingTicketForm({
   };
 
   return (
-    <Card className="w-full bg-white border-l border-gray-200 border-t lg:border-t-0 p-4 lg:p-6 flex flex-col ">
-      <h2 className="text-2xl font-bold text-black mb-2">Buy Parking Ticket</h2>
-      <p className="text-gray-600 mb-6">
+    <Card className="flex w-full flex-col border-t border-l border-gray-200 bg-white p-4 lg:border-t-0 lg:p-6">
+      <h2 className="mb-2 text-2xl font-bold text-black">Buy Parking Ticket</h2>
+      <p className="mb-6 text-gray-600">
         Enter your vehicle details and select duration
       </p>
 
       {selectedParking ? (
         <Card className="mb-6 border-gray-200 bg-gray-50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-5 w-5" />
               {selectedParking.name}
             </CardTitle>
             <CardDescription className="text-gray-600">
@@ -96,24 +94,24 @@ export default function ParkingTicketForm({
         </Card>
       )}
 
-      <div className="space-y-6 flex-1">
+      <div className="flex-1 space-y-6">
         <div>
-          <label className="block text-sm font-semibold text-black mb-2">
+          <label className="mb-2 block text-sm font-semibold text-black">
             Vehicle Plate Number
           </label>
           <Input
             placeholder="e.g., ABC-1234"
             value={plateNumber}
             onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
-            className="border-gray-300 focus:ring-black h-10"
+            className="h-10 border-gray-300 focus:ring-black"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             Enter your vehicle license plate
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-black mb-2">
+          <label className="mb-2 block text-sm font-semibold text-black">
             Parking Duration (Hours)
           </label>
           <div className="flex items-center gap-2">
@@ -135,7 +133,7 @@ export default function ParkingTicketForm({
                   Math.max(1, Number.parseInt(e.target.value) || 1),
                 )
               }
-              className="border-gray-300 focus:ring-black text-center h-10 flex-1"
+              className="h-10 flex-1 border-gray-300 text-center focus:ring-black"
             />
             <Button
               variant="outline"
@@ -146,12 +144,12 @@ export default function ParkingTicketForm({
               +
             </Button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             Choose between 1-24 hours
           </p>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-200">
+        <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Duration:</span>
             <span className="font-medium">{parkingHours} hour(s)</span>
@@ -162,9 +160,9 @@ export default function ParkingTicketForm({
               ${selectedParking?.price.toFixed(2) || "0.00"}/hr
             </span>
           </div>
-          <div className="border-t border-gray-300 pt-2 flex justify-between items-center">
-            <span className="font-semibold text-black flex items-center gap-1">
-              <DollarSign className="w-4 h-4" />
+          <div className="flex items-center justify-between border-t border-gray-300 pt-2">
+            <span className="flex items-center gap-1 font-semibold text-black">
+              <DollarSign className="h-4 w-4" />
               Total Cost:
             </span>
             <span className="text-xl font-bold text-black">
@@ -178,7 +176,7 @@ export default function ParkingTicketForm({
         <Button
           onClick={handleParkButtonClick}
           disabled={!selectedParking || isBooking}
-          className="w-full bg-black text-white hover:bg-gray-800 h-11 text-base font-semibold mt-6"
+          className="mt-6 h-11 w-full bg-black text-base font-semibold text-white hover:bg-gray-800"
         >
           {isBooking ? "Processing..." : "Buy Parking Ticket"}
         </Button>

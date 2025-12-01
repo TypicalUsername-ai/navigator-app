@@ -91,11 +91,11 @@ export default function ParkingMapPage() {
         />
       </div>
 
-      <div className="absolute bottom-2 z-1 flex flex-col justify-center overflow-y-auto p-2 lg:right-0 lg:w-1/4">
+      <div className="absolute z-1 flex flex-col justify-center overflow-y-auto p-2 max-md:bottom-1 lg:right-1 lg:w-1/4">
         <ParkingTicketForm selectedParking={selectedParking} />
       </div>
 
-      <div className="absolute top-3">
+      <div className="absolute top-3 z-10">
         <ParkingSearchBar />
       </div>
     </div>
