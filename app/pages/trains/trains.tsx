@@ -1,4 +1,5 @@
 import TrainSearch, { type TrainSearchParams } from "~/components/TrainSearch";
+import TrainRouteForm from "~/components/trainRouteForm";
 import TrainMap from "~/components/TrainMap";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -59,71 +60,20 @@ export default function TrainsPage() {
   }, [query]);
 
   return (
-    <div className="container mx-auto p-4 flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">Pociągi</h1>
+    <div className="flex h-screen w-screen flex-col items-center justify-start gap-6 p-3">
+      <h1 className="text-2xl font-bold">Trains</h1>
 
-      <TrainSearch onSearch={setQuery} />
+      {/* <TrainSearch onSearch={setQuery} /> */}
+      <TrainRouteForm />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <TrainMap
-            center={
-              (markers[0]?.position as [number, number]) ?? CITY_COORDS.Warszawa
-            }
-            markers={markers}
-            path={path}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>zakupione bilety</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {tickets.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Brak danych</p>
-              ) : (
-                <ul className="space-y-2">
-                  {tickets.map((t) => (
-                    <li key={t.id} className="text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">
-                          {t.from} → {t.to}
-                        </span>
-                        <span className="text-muted-foreground">{t.time}</span>
-                      </div>
-                      <div className="text-muted-foreground">
-                        {t.seat} • {t.price.toFixed(2)} PLN • {t.status}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>zapisane dane pasażerów</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {passengers.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Brak danych</p>
-              ) : (
-                <ul className="space-y-2">
-                  {passengers.map((p) => (
-                    <li key={p.id} className="text-sm">
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-muted-foreground">
-                        {p.email ?? "—"} {p.phone ? `• ${p.phone}` : ""}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+      <div className="w-96">
+        <TrainMap
+          center={
+            (markers[0]?.position as [number, number]) ?? CITY_COORDS.Warszawa
+          }
+          markers={markers}
+          path={path}
+        />
       </div>
     </div>
   );
