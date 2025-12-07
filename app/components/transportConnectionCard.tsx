@@ -27,6 +27,7 @@ export default function TransportConnectionCard() {
         </div>
         <div className="flex flex-row items-center gap-2">
           <BusLine nr={238} />
+          <TramLine nr={23} />
         </div>
       </CardContent>
       <CardFooter className="items-between flex flex-row gap-3">
@@ -63,7 +64,18 @@ function BusLine({ nr }: { number }) {
     <div className="flex flex-row gap-1">
       <BusFront size={32} />
       <Badge variant="ou1tline" className="border-primary rounded-sm border-1">
-        137
+        {nr}
+      </Badge>
+    </div>
+  );
+}
+
+function TramLine({ nr }: { number }) {
+  return (
+    <div className="flex flex-row gap-1">
+      <TramFront size={32} />
+      <Badge variant="ou1tline" className="border-primary rounded-sm border-1">
+        {nr}
       </Badge>
     </div>
   );
