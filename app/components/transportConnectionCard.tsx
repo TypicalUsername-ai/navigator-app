@@ -30,15 +30,19 @@ export default function TransportConnectionCard() {
           <TramLine nr={23} />
         </div>
       </CardContent>
-      <CardFooter className="items-between flex flex-row gap-3">
+      <CardFooter className="items-between flex flex-row gap-1 overflow-scroll">
         <Walk distance={400} />
-        <Badge>Jordanowska</Badge>
+        <Stop name="Jordanowska" />
         <Stops stops={10} />
-        <Badge>Rodno Matecznego</Badge>
+        <Stop name="Rondo Matecznego 1" />
         <Walk distance={200} />
       </CardFooter>
     </Card>
   );
+}
+
+function Stop({ name }: { string }) {
+  return <Badge className="overflow-hidden px-1 text-ellipsis">{name}</Badge>;
 }
 
 function Walk({ distance }: { number }) {
@@ -54,7 +58,7 @@ function Stops({ stops }: { number }) {
   return (
     <div className="flex flex-col items-center">
       <Route size={24} />
-      <p className="text-light text-xs">{stops} stops</p>
+      <p className="text-light truncate text-xs">{stops} stops</p>
     </div>
   );
 }
