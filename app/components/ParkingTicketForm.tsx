@@ -74,35 +74,35 @@ export default function ParkingTicketForm({
   }
 
   return (
-    <Card className="relative flex w-full flex-col gap-3 border border-gray-200 bg-white p-3 shadow-lg md:p-4 lg:p-6">
+    <Card className="relative flex w-full flex-col gap-2 border border-gray-200 bg-white p-2 shadow-lg sm:gap-3 sm:p-3 md:p-4 lg:p-6">
       {/* Close button */}
       <button
         onClick={handleClose}
-        className="absolute right-2 top-2 z-10 rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 md:right-3 md:top-3"
+        className="absolute right-1 top-1 z-10 rounded-full p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 sm:right-2 sm:top-2 sm:p-1.5 md:right-3 md:top-3"
         aria-label="Close form"
       >
-        <X className="h-5 w-5" />
+        <X className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
 
-      <CardHeader className="pr-8">
-        <CardTitle className="text-xl font-bold md:text-2xl">
+      <CardHeader className="pr-6 sm:pr-8">
+        <CardTitle className="text-base font-bold sm:text-xl md:text-2xl">
           Buy Parking Ticket
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-2 sm:gap-3 md:gap-4">
         {/* Parking location info */}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 md:p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-gray-600 md:h-5 md:w-5" />
-            <CardTitle className="text-base font-semibold md:text-lg">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-3 md:p-4">
+          <div className="mb-1 flex items-center gap-1.5 sm:mb-2 sm:gap-2">
+            <MapPin className="h-3 w-3 text-gray-600 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+            <CardTitle className="text-sm font-semibold sm:text-base md:text-lg">
               {selectedParking.name}
             </CardTitle>
           </div>
-          <p className="mb-3 text-xs text-gray-600 md:text-sm">
+          <p className="mb-2 text-[10px] text-gray-600 sm:mb-3 sm:text-xs md:text-sm">
             {selectedParking.address}
           </p>
-          <div className="flex flex-wrap gap-3 text-xs md:text-sm">
+          <div className="flex flex-wrap gap-2 text-[10px] sm:gap-3 sm:text-xs md:text-sm">
             <div className="flex justify-between gap-2">
               <span className="text-gray-600">Available:</span>
               <span className="font-semibold">
@@ -119,25 +119,17 @@ export default function ParkingTicketForm({
         </div>
 
         {/* Plate number and hours on same row */}
-        <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+        <div className="flex flex-row gap-2 sm:gap-3 md:gap-4">
           <div className="flex-1">
             <Input
               placeholder="Plate number"
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
-              className="h-10 border-gray-300 focus:ring-black md:h-11"
+              className="h-9 border-gray-300 text-sm focus:ring-black sm:h-10 md:h-11"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 border-gray-300 bg-transparent px-3 md:h-11"
-              onClick={() => setParkingHours(Math.max(1, parkingHours - 1))}
-            >
-              −
-            </Button>
             <Input
               type="number"
               min="1"
@@ -148,27 +140,20 @@ export default function ParkingTicketForm({
                   Math.max(1, Math.min(24, Number.parseInt(e.target.value) || 1)),
                 )
               }
-              className="h-10 w-20 border-gray-300 text-center focus:ring-black md:h-11"
+              className="h-9 w-16 border-gray-300 text-center text-sm focus:ring-black sm:h-10 sm:w-20 md:h-11"
             />
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 border-gray-300 bg-transparent px-3 md:h-11"
-              onClick={() => setParkingHours(Math.min(24, parkingHours + 1))}
-            >
-              +
-            </Button>
+            <span className="text-xs text-gray-600 sm:text-sm">hour</span>
           </div>
         </div>
 
         {/* Cost summary */}
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 md:p-4">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-3 md:p-4">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1 text-sm font-semibold text-black md:text-base">
-              <DollarSign className="h-4 w-4" />
+            <span className="flex items-center gap-1 text-xs font-semibold text-black sm:text-sm md:text-base">
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
               Total:
             </span>
-            <span className="text-lg font-bold text-black md:text-xl">
+            <span className="text-base font-bold text-black sm:text-lg md:text-xl">
               ${totalCost.toFixed(2)}
             </span>
           </div>
@@ -179,7 +164,7 @@ export default function ParkingTicketForm({
         <Button
           onClick={handleParkButtonClick}
           disabled={!plateNumber.trim() || isBooking}
-          className="h-11 w-full bg-black text-base font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+          className="h-9 w-full bg-black text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50 sm:h-10 sm:text-base md:h-11"
         >
           {isBooking ? "Processing..." : "Buy Parking Ticket"}
         </Button>

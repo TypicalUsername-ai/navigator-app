@@ -92,7 +92,7 @@ export default function ParkingMapPage() {
       </div>
 
       {selectedParking && (
-        <div className="absolute z-10 flex flex-col justify-center overflow-y-auto p-2 max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:max-h-[50vh] lg:right-4 lg:top-4 lg:w-96 lg:max-h-[calc(100vh-2rem)]">
+        <div className="absolute z-10 flex flex-col p-1 max-md:bottom-0 max-md:left-0 max-md:right-0 sm:p-2 md:right-4 md:bottom-4 md:w-96">
           <ParkingTicketForm
             selectedParking={selectedParking}
             onClose={() => setSelectedParking(null)}
