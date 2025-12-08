@@ -1,5 +1,10 @@
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import {
   InputGroup,
   InputGroupAddon,
@@ -8,8 +13,6 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "~/components/ui/input-group";
-import { Label } from "~/components/ui/label";
-import TimePicker from "~/components/timePicker";
 import {
   Card,
   CardAction,
@@ -19,10 +22,13 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import TimePicker from "~/components/timePicker";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "~/components/ui/calendar";
 import { ArrowRightFromLine, ArrowRightToLine } from "lucide-react";
 import { useState } from "react";
 
-export default function TransportRouteForm({
+export default function TrainRouteForm({
   city,
   onSearch,
 }: TransportRouteFormParams) {
@@ -30,6 +36,8 @@ export default function TransportRouteForm({
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
   const [time, setTime] = useState(now.toLocaleTimeString());
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(undefined);
   return (
     <Card className="w-full max-w-96 border-3 border-dashed border-zinc-400">
       <CardHeader>
@@ -57,7 +65,38 @@ export default function TransportRouteForm({
             <ArrowRightToLine />
           </InputGroupAddon>
         </InputGroup>
-        <div className="flex flex-row items-center justify-between gap-2">
+        <div className="flex flex-row items-end justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="date-picker" className="px-1 text-xs">
+              Date
+            </Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  id="date-picker"
+                  className="w-32 justify-between font-normal"
+                >
+                  {date ? date.toLocaleDateString() : "Select date"}
+                  <CalendarIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="z-1000 w-auto overflow-hidden p-0"
+                align="start"
+              >
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  captionLayout="dropdown"
+                  onSelect={(date) => {
+                    setDate(date);
+                    setOpen(false);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex flex-col gap-1" id="time-picker">
             <Label htmlFor="time-picker" className="px-1 text-xs">
               Time
@@ -65,10 +104,9 @@ export default function TransportRouteForm({
             <TimePicker
               initHour={now.getHours()}
               initMinute={now.getMinutes()}
-              onChange={(e) => console.log(e)}
+              onChange={(hour, minute) => console.log(hour, minute)}
             />
           </div>
-
           <Button onClick={() => onSearch(from, to, time)}>Search</Button>
         </div>
       </CardContent>
