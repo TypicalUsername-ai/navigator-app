@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  CardAction,
   CardFooter,
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { MapPin, DollarSign } from "lucide-react";
+import { MapPin, DollarSign, X } from "lucide-react";
 
 interface Parking {
   id: number;
@@ -23,14 +21,24 @@ interface Parking {
 
 interface ParkingTicketFormProps {
   selectedParking: Parking | null;
+  onClose: () => void;
 }
 
 export default function ParkingTicketForm({
   selectedParking,
+  onClose,
 }: ParkingTicketFormProps) {
-  const [plateNumber, setPlateNumber] = useState<string | null>("");
+  const [plateNumber, setPlateNumber] = useState<string>("");
   const [parkingHours, setParkingHours] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
+
+  // Reset form when parking is deselected
+  useEffect(() => {
+    if (!selectedParking) {
+      setPlateNumber("");
+      setParkingHours(1);
+    }
+  }, [selectedParking]);
 
   const totalCost = selectedParking ? selectedParking.price * parkingHours : 0;
 
@@ -52,145 +60,129 @@ export default function ParkingTicketForm({
 
     setPlateNumber("");
     setParkingHours(1);
+    onClose();
   };
 
+  const handleClose = () => {
+    setPlateNumber("");
+    setParkingHours(1);
+    onClose();
+  };
+
+  if (!selectedParking) {
+    return null;
+  }
+
   return (
-    <Card
-      className={`flex w-full flex-col gap-3 border-t border-l border-gray-200 bg-white p-2 lg:border-t-0 lg:p-6 ${selectedParking ? "" : "max-lg:hidden"}`}
-    >
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">Buy Parking Ticket</CardTitle>
-        <CardDescription className="text-gray-600">
-          Enter your vehicle details and select duration
-        </CardDescription>
+    <Card className="relative flex w-full flex-col gap-3 border border-gray-200 bg-white p-3 shadow-lg md:p-4 lg:p-6">
+      {/* Close button */}
+      <button
+        onClick={handleClose}
+        className="absolute right-2 top-2 z-10 rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 md:right-3 md:top-3"
+        aria-label="Close form"
+      >
+        <X className="h-5 w-5" />
+      </button>
+
+      <CardHeader className="pr-8">
+        <CardTitle className="text-xl font-bold md:text-2xl">
+          Buy Parking Ticket
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        {selectedParking ? (
-          <Card className="border-gray-200 bg-gray-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <MapPin className="h-5 w-5" />
-                {selectedParking.name}
-              </CardTitle>
-              <CardDescription className="text-gray-600">
-                {selectedParking.address}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Available Spots:</span>
-                <span className="font-semibold">
-                  {selectedParking.available}/{selectedParking.total}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Price per Hour:</span>
-                <span className="font-semibold">
-                  ${selectedParking.price.toFixed(2)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="border-gray-200 bg-gray-100 text-center">
-            <p className="text-gray-500">
-              Select a parking location from the map
-            </p>
-          </Card>
-        )}
 
-        <div className="flex-1">
-          <div>
-            <label className="block text-sm font-semibold text-black">
-              Vehicle Plate Number
-            </label>
-            <Input
-              placeholder="e.g., ABC-1234"
-              value={plateNumber}
-              onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
-              className="h-10 border-gray-300 focus:ring-black"
-            />
-            <p className="text-xs text-gray-500">
-              Enter your vehicle license plate
-            </p>
+      <CardContent className="flex flex-col gap-4">
+        {/* Parking location info */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 md:p-4">
+          <div className="mb-2 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-gray-600 md:h-5 md:w-5" />
+            <CardTitle className="text-base font-semibold md:text-lg">
+              {selectedParking.name}
+            </CardTitle>
           </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-black">
-              Parking Duration (Hours)
-            </label>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-300 bg-transparent"
-                onClick={() => setParkingHours(Math.max(1, parkingHours - 1))}
-              >
-                −
-              </Button>
-              <Input
-                type="number"
-                min="1"
-                max="24"
-                value={parkingHours}
-                onChange={(e) =>
-                  setParkingHours(
-                    Math.max(1, Number.parseInt(e.target.value) || 1),
-                  )
-                }
-                className="h-10 flex-1 border-gray-300 text-center focus:ring-black"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-300 bg-transparent"
-                onClick={() => setParkingHours(Math.min(24, parkingHours + 1))}
-              >
-                +
-              </Button>
+          <p className="mb-3 text-xs text-gray-600 md:text-sm">
+            {selectedParking.address}
+          </p>
+          <div className="flex flex-wrap gap-3 text-xs md:text-sm">
+            <div className="flex justify-between gap-2">
+              <span className="text-gray-600">Available:</span>
+              <span className="font-semibold">
+                {selectedParking.available}/{selectedParking.total}
+              </span>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Choose between 1-24 hours
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-gray-200 bg-gray-50">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Duration:</span>
-              <span className="font-medium">{parkingHours} hour(s)</span>
-            </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between gap-2">
               <span className="text-gray-600">Rate:</span>
-              <span className="font-medium">
-                ${selectedParking?.price.toFixed(2) || "0.00"}/hr
-              </span>
-            </div>
-            <div className="flex items-center justify-between border-t border-gray-300 pt-2">
-              <span className="flex items-center gap-1 font-semibold text-black">
-                <DollarSign className="h-4 w-4" />
-                Total Cost:
-              </span>
-              <span className="text-xl font-bold text-black">
-                ${totalCost.toFixed(2)}
+              <span className="font-semibold">
+                ${selectedParking.price.toFixed(2)}/hr
               </span>
             </div>
           </div>
         </div>
+
+        {/* Plate number and hours on same row */}
+        <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+          <div className="flex-1">
+            <Input
+              placeholder="Plate number"
+              value={plateNumber}
+              onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
+              className="h-10 border-gray-300 focus:ring-black md:h-11"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 border-gray-300 bg-transparent px-3 md:h-11"
+              onClick={() => setParkingHours(Math.max(1, parkingHours - 1))}
+            >
+              −
+            </Button>
+            <Input
+              type="number"
+              min="1"
+              max="24"
+              value={parkingHours}
+              onChange={(e) =>
+                setParkingHours(
+                  Math.max(1, Math.min(24, Number.parseInt(e.target.value) || 1)),
+                )
+              }
+              className="h-10 w-20 border-gray-300 text-center focus:ring-black md:h-11"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 border-gray-300 bg-transparent px-3 md:h-11"
+              onClick={() => setParkingHours(Math.min(24, parkingHours + 1))}
+            >
+              +
+            </Button>
+          </div>
+        </div>
+
+        {/* Cost summary */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 md:p-4">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1 text-sm font-semibold text-black md:text-base">
+              <DollarSign className="h-4 w-4" />
+              Total:
+            </span>
+            <span className="text-lg font-bold text-black md:text-xl">
+              ${totalCost.toFixed(2)}
+            </span>
+          </div>
+        </div>
       </CardContent>
 
-      <CardFooter>
-        <CardAction className="flex h-11 flex-row items-center justify-between gap-2">
-          <Button
-            onClick={handleParkButtonClick}
-            disabled={!selectedParking || isBooking}
-            className="bg-black text-base font-semibold text-white hover:bg-gray-800"
-          >
-            {isBooking ? "Processing..." : "Buy Parking Ticket"}
-          </Button>
-          <Button variant="destructive" className="w-1/5">
-            clear
-          </Button>
-        </CardAction>
+      <CardFooter className="pt-0">
+        <Button
+          onClick={handleParkButtonClick}
+          disabled={!plateNumber.trim() || isBooking}
+          className="h-11 w-full bg-black text-base font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+        >
+          {isBooking ? "Processing..." : "Buy Parking Ticket"}
+        </Button>
       </CardFooter>
     </Card>
   );
