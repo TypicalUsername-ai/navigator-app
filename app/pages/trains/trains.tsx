@@ -1,5 +1,7 @@
 import TrainSearch, { type TrainSearchParams } from "~/components/TrainSearch";
-import TrainRouteForm from "~/components/trainRouteForm";
+import TrainRouteForm, {
+  type RouteSearchFn,
+} from "~/components/trainRouteForm";
 import TrainMap from "~/components/TrainMap";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -24,7 +26,7 @@ const CITY_COORDS: Record<string, [number, number]> = {
   Poznań: [52.4064, 16.9252],
 };
 
-export default function TrainsPage() {
+export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
   const [query, setQuery] = useState<TrainSearchParams | null>(null);
   const [tickets, setTickets] = useState<TrainTicket[]>([]);
   const [passengers, setPassengers] = useState<Passenger[]>([]);
@@ -64,7 +66,7 @@ export default function TrainsPage() {
       <h1 className="text-2xl font-bold">Trains</h1>
 
       {/* <TrainSearch onSearch={setQuery} /> */}
-      <TrainRouteForm />
+      <TrainRouteForm city={city} onSearch={onSearch} />
 
       <div className="w-96">
         <TrainMap
@@ -78,3 +80,8 @@ export default function TrainsPage() {
     </div>
   );
 }
+
+export type TrainsPageParams = {
+  city: string;
+  onSearch: RouteSearchFn;
+};
