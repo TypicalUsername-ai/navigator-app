@@ -1,9 +1,9 @@
-import { useSearchParams, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { DollarSign, ArrowLeft } from "lucide-react";
 
-interface TicketDetails {
+interface TicketData {
   type: "parking" | "train" | "transport";
   name: string;
   details: Array<{ label: string; value: string }>;
@@ -11,22 +11,11 @@ interface TicketDetails {
 }
 
 export default function PaymentPage() {
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const ticketType = searchParams.get("type") as "parking" | "train" | "transport" | null;
-  const ticketName = searchParams.get("name") || "";
-  const total = parseFloat(searchParams.get("total") || "0");
-  
-  let details: Array<{ label: string; value: string }> = [];
-  try {
-    const detailsParam = searchParams.get("details");
-    if (detailsParam) {
-      details = JSON.parse(decodeURIComponent(detailsParam));
-    }
-  } catch (e) {
-
-  }
+  // Get ticket data from navigation state
+  const ticketData = location.state as TicketData | null;
 
   const handlePayment = (method: string) => {
     alert(`Processing payment with ${method}...`);
@@ -37,7 +26,7 @@ export default function PaymentPage() {
     navigate(-1);
   };
 
-  if (!ticketType) {
+  if (!ticketData) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -72,12 +61,12 @@ export default function PaymentPage() {
               <div className="flex-1 md:pr-6">
                 <CardHeader className="px-0 pb-4">
                   <CardTitle className="text-xl font-bold md:text-2xl">
-                    {ticketName}
+                    {ticketData.name}
                   </CardTitle>
                 </CardHeader>
 
                 <div className="space-y-3">
-                  {details.map((detail, index) => (
+                  {ticketData.details.map((detail, index) => (
                     <div
                       key={index}
                       className="flex justify-between text-sm md:text-base"
@@ -95,7 +84,7 @@ export default function PaymentPage() {
                     Total:
                   </span>
                   <span className="text-2xl font-bold text-black md:text-3xl">
-                    ${total.toFixed(2)}
+                    ${ticketData.total.toFixed(2)}
                   </span>
                 </div>
               </div>

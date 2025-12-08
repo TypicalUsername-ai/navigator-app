@@ -51,19 +51,20 @@ export default function ParkingTicketForm({
       return;
     }
 
-    const details = [
-      { label: "Location", value: selectedParking.name },
-      { label: "Address", value: selectedParking.address },
-      { label: "Plate Number", value: plateNumber },
-      { label: "Duration", value: `${parkingHours} hour(s)` },
-      { label: "Rate", value: `$${selectedParking.price.toFixed(2)}/hr` },
-    ];
+    const ticketData = {
+      type: "parking" as const,
+      name: selectedParking.name,
+      total: totalCost,
+      details: [
+        { label: "Location", value: selectedParking.name },
+        { label: "Address", value: selectedParking.address },
+        { label: "Plate Number", value: plateNumber },
+        { label: "Duration", value: `${parkingHours} hour(s)` },
+        { label: "Rate", value: `$${selectedParking.price.toFixed(2)}/hr` },
+      ],
+    };
 
-    const detailsParam = encodeURIComponent(JSON.stringify(details));
-
-    navigate(
-      `/${params.city}/payment?type=parking&name=${encodeURIComponent(selectedParking.name)}&total=${totalCost.toFixed(2)}&details=${detailsParam}`
-    );
+    navigate(`/${params.city}/payment`, { state: ticketData });
   };
 
   const handleClose = () => {
