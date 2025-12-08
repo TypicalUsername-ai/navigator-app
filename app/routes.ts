@@ -16,5 +16,6 @@ export default [
     route("transport/search", "routes/transportSearch.tsx"), // search page for transport
     route("trains/search", "routes/trainSearch.tsx"), // search page for trains
     route("trains", "routes/trains.tsx"), // train selection page
+    route("payment", "routes/payment.tsx"), // payment page
   ]),
 ] satisfies RouteConfig;

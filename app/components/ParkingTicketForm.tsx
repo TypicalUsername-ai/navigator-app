@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 import {
   Card,
   CardContent,
@@ -30,9 +31,9 @@ export default function ParkingTicketForm({
 }: ParkingTicketFormProps) {
   const [plateNumber, setPlateNumber] = useState<string>("");
   const [parkingHours, setParkingHours] = useState(1);
-  const [isBooking, setIsBooking] = useState(false);
+  const navigate = useNavigate();
+  const params = useParams();
 
-  // Reset form when parking is deselected
   useEffect(() => {
     if (!selectedParking) {
       setPlateNumber("");
@@ -42,7 +43,7 @@ export default function ParkingTicketForm({
 
   const totalCost = selectedParking ? selectedParking.price * parkingHours : 0;
 
-  const handleParkButtonClick = async () => {
+  const handleParkButtonClick = () => {
     if (!plateNumber.trim() || !selectedParking) {
       alert(
         "Please select a parking location and enter your vehicle plate number",
@@ -50,17 +51,20 @@ export default function ParkingTicketForm({
       return;
     }
 
-    setIsBooking(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsBooking(false);
+    const ticketData = {
+      type: "parking" as const,
+      name: selectedParking.name,
+      total: totalCost,
+      details: [
+        { label: "Location", value: selectedParking.name },
+        { label: "Address", value: selectedParking.address },
+        { label: "Plate Number", value: plateNumber },
+        { label: "Duration", value: `${parkingHours} hour(s)` },
+        { label: "Rate", value: `$${selectedParking.price.toFixed(2)}/hr` },
+      ],
+    };
 
-    alert(
-      `Ticket booked!\nVehicle: ${plateNumber}\nLocation: ${selectedParking.name}\nDuration: ${parkingHours} hour(s)\nTotal: $${totalCost.toFixed(2)}`,
-    );
-
-    setPlateNumber("");
-    setParkingHours(1);
-    onClose();
+    navigate(`/${params.city}/payment`, { state: ticketData });
   };
 
   const handleClose = () => {
@@ -163,10 +167,10 @@ export default function ParkingTicketForm({
       <CardFooter className="pt-0">
         <Button
           onClick={handleParkButtonClick}
-          disabled={!plateNumber.trim() || isBooking}
+          disabled={!plateNumber.trim()}
           className="h-9 w-full bg-black text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50 sm:h-10 sm:text-base md:h-11"
         >
-          {isBooking ? "Processing..." : "Buy Parking Ticket"}
+          Buy Parking Ticket
         </Button>
       </CardFooter>
     </Card>
