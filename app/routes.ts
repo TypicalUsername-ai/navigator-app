@@ -13,7 +13,8 @@ export default [
     index("routes/city.tsx"), // transport mdoe selection
     route("parking", "routes/parking.tsx"), // parking page
     route("transport", "routes/transport.tsx"), // public transport page
-    route("transport/search", "routes/transportSearch.tsx"), // search page (maybe for both transport and trains)
+    route("transport/search", "routes/transportSearch.tsx"), // search page for transport
+    route("trains/search", "routes/trainSearch.tsx"), // search page for trains
     route("trains", "routes/trains.tsx"), // train selection page
   ]),
 ] satisfies RouteConfig;
