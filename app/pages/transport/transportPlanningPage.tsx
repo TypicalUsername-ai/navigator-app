@@ -21,6 +21,7 @@ export default function TransportPlanningPage({
       <div className="absolute top-3 left-3 z-10 sm:top-4 sm:left-4">
         <BackButton onClick={() => navigate(`/${params.city}`)} />
       </div>
+      <h1 className="text-2xl font-bold">City transport</h1>
       <TransportRouteForm city={city} onSearch={onSearch} />
       <RoutesQuickAccess
         routes={recentRoutes}
