@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import ParkingMap from "~/components/ParkingMap";
 import ParkingTicketForm from "~/components/ParkingTicketForm";
 import ParkingSearchBar from "~/components/parkingSearchBar";
+import BackButton from "~/components/BackButton";
 
 interface ParkingLocation {
   id: number;
@@ -80,9 +82,14 @@ export default function ParkingMapPage() {
   const [selectedParking, setSelectedParking] = useState<
     (typeof PARKING_LOCATIONS)[0] | null
   >(null);
+  const navigate = useNavigate();
+  const params = useParams();
 
   return (
     <div className="relative-z-0 flex h-screen w-screen flex-col items-center justify-center gap-1">
+      <div className="absolute top-3 left-3 z-20 sm:top-4 sm:left-4">
+        <BackButton onClick={() => navigate(`/${params.city}`)} />
+      </div>
       <div className="z-0 h-full w-full">
         <ParkingMap
           parkings={PARKING_LOCATIONS}
