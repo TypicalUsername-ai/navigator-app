@@ -1,5 +1,4 @@
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import {
   Popover,
@@ -23,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import TimePicker from "~/components/timePicker";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "~/components/ui/calendar";
 import { ArrowRightFromLine, ArrowRightToLine } from "lucide-react";
@@ -97,17 +97,14 @@ export default function TrainRouteForm({
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1" id="time-picker">
             <Label htmlFor="time-picker" className="px-1 text-xs">
-              Date
+              Time
             </Label>
-            <Input
-              type="time"
-              id="time-picker"
-              step="1"
-              defaultValue={now.toLocaleTimeString()}
-              onChange={(e) => setTime(e.target.value)}
-              className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            <TimePicker
+              initHour={now.getHours()}
+              initMinute={now.getMinutes()}
+              onChange={(hour, minute) => console.log(hour, minute)}
             />
           </div>
           <Button onClick={() => onSearch(from, to, time)}>Search</Button>

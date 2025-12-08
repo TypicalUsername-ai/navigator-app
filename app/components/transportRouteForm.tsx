@@ -8,6 +8,8 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "~/components/ui/input-group";
+import { Label } from "~/components/ui/label";
+import TimePicker from "~/components/timePicker";
 import {
   Card,
   CardAction,
@@ -29,10 +31,10 @@ export default function TransportRouteForm({
   const [to, setTo] = useState<string>();
   const [time, setTime] = useState(now.toLocaleTimeString());
   return (
-    <Card className="border-3 border-dashed border-zinc-400 w-full max-w-96">
+    <Card className="w-full max-w-96 border-3 border-dashed border-zinc-400">
       <CardHeader>
         <CardTitle className="text-start text-xl">Where to?</CardTitle>
-        <CardDescription className="text-start text-sm text-end p-0 m-0">
+        <CardDescription className="m-0 p-0 text-end text-start text-sm">
           {city}
         </CardDescription>
       </CardHeader>
@@ -55,15 +57,18 @@ export default function TransportRouteForm({
             <ArrowRightToLine />
           </InputGroupAddon>
         </InputGroup>
-        <div className="flex flex-row gap-2 items-center justify-between">
-          <Input
-            type="time"
-            id="time-picker"
-            step="1"
-            defaultValue={now.toLocaleTimeString()}
-            onChange={(e) => setTime(e.target.value)}
-            className="bg-background w-3/8 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-          />
+        <div className="flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-col gap-1" id="time-picker">
+            <Label htmlFor="time-picker" className="px-1 text-xs">
+              Time
+            </Label>
+            <TimePicker
+              initHour={now.getHours()}
+              initMinute={now.getMinutes()}
+              onChange={(e) => console.log(e)}
+            />
+          </div>
+
           <Button onClick={() => onSearch(from, to, time)}>Search</Button>
         </div>
       </CardContent>
