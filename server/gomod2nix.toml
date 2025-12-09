@@ -1,0 +1,15 @@
+schema = 3
+
+[mod]
+  [mod."github.com/ajg/form"]
+    version = "v1.5.1"
+    hash = "sha256-wHKZnoL8gW3YL8frdMIbs703ZX/NruuW5dV13PhxlG8="
+  [mod."github.com/go-chi/chi/v5"]
+    version = "v5.2.3"
+    hash = "sha256-fB8KidqJgWrPnnS+0uIKVOO1VRclD6nG1Lt1IeSq2M0="
+  [mod."github.com/go-chi/docgen"]
+    version = "v1.3.0"
+    hash = "sha256-bMulhOCtGrf6K3qVHexJy4pDjVoiGrDX9wKhY5uGFNw="
+  [mod."github.com/go-chi/render"]
+    version = "v1.0.3"
+    hash = "sha256-BnnoCszIVvL2Y7+sD+jR4ZePlscAtQfvLTdbGRWvi1k="
