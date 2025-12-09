@@ -4,6 +4,8 @@ import TrainRouteForm, {
 } from "~/components/trainRouteForm";
 import TrainMap from "~/components/TrainMap";
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import BackButton from "~/components/BackButton";
 import {
   fetchPassengers,
   fetchTickets,
@@ -30,6 +32,8 @@ export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
   const [query, setQuery] = useState<TrainSearchParams | null>(null);
   const [tickets, setTickets] = useState<TrainTicket[]>([]);
   const [passengers, setPassengers] = useState<Passenger[]>([]);
+  const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
     void (async () => {
@@ -62,7 +66,10 @@ export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
   }, [query]);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-start gap-6 p-3">
+    <div className="flex h-screen w-screen flex-col items-center justify-start gap-6 p-3 relative">
+      <div className="absolute top-3 left-3 z-10 sm:top-4 sm:left-4">
+        <BackButton onClick={() => navigate(`/${params.city}`)} />
+      </div>
       <h1 className="text-2xl font-bold">Trains</h1>
 
       {/* <TrainSearch onSearch={setQuery} /> */}
