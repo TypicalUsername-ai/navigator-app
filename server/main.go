@@ -17,6 +17,8 @@ import (
 
 var routes = flag.Bool("routes", false, "Generate router documentation")
 
+var overpass_api_url = "http://overpass-api.de/api/interpreter?data="
+
 func main() {
 	flag.Parse()
 
