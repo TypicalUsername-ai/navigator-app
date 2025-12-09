@@ -31,10 +31,12 @@ export default function ParkingMap({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    mapRef.current = L.map(containerRef.current).setView(
-      [40.7648, -73.9776],
-      14,
-    );
+    mapRef.current = L.map(containerRef.current, {
+      zoomControl: false, // Disable default zoom control
+    }).setView([40.7648, -73.9776], 14);
+
+    // Add zoom control to top-right corner
+    L.control.zoom({ position: "topright" }).addTo(mapRef.current);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
