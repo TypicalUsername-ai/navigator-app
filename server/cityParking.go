@@ -23,6 +23,14 @@ type ParkingSpot struct {
 	Fee      string
 }
 
+type parkingCacheEntry struct {
+	spots     []ParkingSpot
+	fetchedAt time.Time
+}
+
+var parkingCache = make(map[string]parkingCacheEntry)
+var parkingCacheTTL = 5 * time.Minute
+
 func (rd *CityParkingResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
@@ -89,15 +97,37 @@ type CityParkingQuery struct {
 
 func CityParkingSpots(city string) []ParkingSpot {
 
+	if entry, ok := parkingCache[city]; ok && time.Since(entry.fetchedAt) < parkingCacheTTL {
+		return entry.spots
+	}
+
+	var cached []ParkingSpot
+	if entry, ok := parkingCache[city]; ok {
+		cached = entry.spots
+	}
+
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;nwr["amenity"="parking"]["access"!~"(private|customers)"]["capacity"~"[0-9]+"](area.searchArea);out geom;`, city)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
-		panic(err)
+		fmt.Printf("[GetCityParking] error: %v\n", err)
+		if cached != nil {
+			return cached
+		}
+		return []ParkingSpot{}
 	}
+	defer response.Body.Close()
 
 	fmt.Printf("[GetCityParking] => %v\n", response.Status)
+
+	if response.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(response.Body)
+		fmt.Printf("[GetCityParking] non-200: %v body: %s\n", response.Status, string(body))
+		if cached != nil {
+			return cached
+		}
+		return []ParkingSpot{}
+	}
 
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -145,6 +175,8 @@ func CityParkingSpots(city string) []ParkingSpot {
 		spots = append(spots, newSpot)
 
 	}
+
+	parkingCache[city] = parkingCacheEntry{spots: spots, fetchedAt: time.Now()}
 
 	return spots
 

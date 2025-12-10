@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var cachedCities []City
+
 type CitiesResponse struct {
 	Cities []City `json:"cities"`
 }
@@ -77,10 +79,26 @@ func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
 	var query = fmt.Sprintf(`[out:json][timeout:25];(%v);out geom;`, param)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
 		panic(err)
 	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(response.Body)
+		fmt.Printf("[SuppCityBoundaries] non-200: %v body: %s\n", response.Status, string(body))
+		if len(cachedCities) > 0 {
+			render.Render(w, r, &CitiesResponse{Cities: cachedCities})
+			return
+		}
+		fallback := make([]City, 0, len(SupportedCities()))
+		for _, name := range SupportedCities() {
+			fallback = append(fallback, City{Name: name, Lat: 0, Lon: 0})
+		}
+		render.Render(w, r, &CitiesResponse{Cities: fallback})
+		return
+	}
+
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
@@ -101,6 +119,10 @@ func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
 		lon := (data.Bounds.Maxlon + data.Bounds.Minlon) / 2
 		cities = append(cities, City{Name: data.Tags.Name, Lat: lat, Lon: lon})
 
+	}
+
+	if len(cities) > 0 {
+		cachedCities = cities
 	}
 
 	cityList := CitiesResponse{Cities: cities}
