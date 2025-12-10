@@ -35,6 +35,7 @@ func main() {
 		r.Route("/{cityName}", func(r chi.Router) {
 			//r.Use(CitiesCtx)
 			r.Mount("/transport", transportRouter())
+			r.Mount("/trains", trainRouter())
 		})
 	})
 
@@ -62,7 +63,7 @@ func (rd *CitiesResponse) Render(w http.ResponseWriter, r *http.Request) error {
 }
 
 func SupportedCities() []string {
-	return []string{"Wrocław"}
+	return []string{"Wrocław", "Warszawa", "Łódź", "Kraków", "Opole"}
 }
 
 func GetSupportedCities(w http.ResponseWriter, r *http.Request) {

@@ -18,6 +18,15 @@ func transportRouter() chi.Router {
 
 }
 
+func trainRouter() chi.Router {
+	r := chi.NewRouter()
+
+	r.Get("/stops", GetRailwayStops)
+
+	return r
+
+}
+
 var CityNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Requested city not found."}
 
 func CitiesCtx(next http.Handler) http.Handler {
