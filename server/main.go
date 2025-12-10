@@ -36,6 +36,7 @@ func main() {
 			//r.Use(CitiesCtx)
 			r.Mount("/transport", transportRouter())
 			r.Mount("/trains", trainRouter())
+			r.Mount("/parking", parkingRouter())
 		})
 	})
 

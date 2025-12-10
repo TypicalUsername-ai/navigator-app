@@ -27,6 +27,16 @@ func trainRouter() chi.Router {
 
 }
 
+func parkingRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Use(CitiesCtx)
+
+	r.With(CitiesCtx).Get("/all", GetCityParking)
+
+	return r
+
+}
+
 var CityNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Requested city not found."}
 
 func CitiesCtx(next http.Handler) http.Handler {
