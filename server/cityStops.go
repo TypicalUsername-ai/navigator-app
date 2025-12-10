@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+var stopsCache = make(map[string]stopsCacheEntry)
+var stopsCacheTTL = 5 * time.Minute
+
+type stopsCacheEntry struct {
+	stops     []TransportStop
+	fetchedAt time.Time
+}
+
 type CityStopsResponse struct {
 	Stops []TransportStop `json:"stops"`
 }
@@ -72,15 +80,37 @@ type CityStopsQuery struct {
 
 func GetStops(city string) []TransportStop {
 
+	if entry, ok := stopsCache[city]; ok && time.Since(entry.fetchedAt) < stopsCacheTTL {
+		return entry.stops
+	}
+
+	var cached []TransportStop
+	if entry, ok := stopsCache[city]; ok {
+		cached = entry.stops
+	}
+
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;(node["public_transport"="platform"]["bus"="yes"](area.searchArea);node["public_transport"="platform"]["tram"="yes"](area.searchArea););out geom;`, city)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
-		panic(err)
+		fmt.Printf("[GetStops] error: %v\n", err)
+		if cached != nil {
+			return cached
+		}
+		return []TransportStop{}
 	}
+	defer response.Body.Close()
 
 	fmt.Printf("[GetStops] => %v\n", response.Status)
+
+	if response.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(response.Body)
+		fmt.Printf("[GetStops] non-200: %v body: %s\n", response.Status, string(body))
+		if cached != nil {
+			return cached
+		}
+		return []TransportStop{}
+	}
 
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -102,6 +132,8 @@ func GetStops(city string) []TransportStop {
 		stops = append(stops, newStop)
 
 	}
+
+	stopsCache[city] = stopsCacheEntry{stops: stops, fetchedAt: time.Now()}
 
 	return stops
 
