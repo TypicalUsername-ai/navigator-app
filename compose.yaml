@@ -15,6 +15,13 @@ services:
         reservations:
           cpus: "1"
           memory: 1G
+  backend:
+    image: golang:1.25
+    ports:
+      - "3333:3333"
+    volumes:
+      - "./server:/app"
+    entrypoint: "/app/entrypoint.sh"
 
 volumes:
   node_modules:
