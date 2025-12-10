@@ -19,6 +19,40 @@ Navigator app docs
 
 </details>
 <details>
+<summary>`/city/{cityName}/parking/all`</summary>
+
+- [RequestID]()
+- [Logger]()
+- [Recoverer]()
+- [URLFormat]()
+- [main.main.SetContentType.func2]()
+- **/city**
+	- **/{cityName}**
+		- **/parking**
+			- [main.CitiesCtx]()
+			- **/all**
+				- _GET_
+					- [main.CitiesCtx]()
+					- [main.GetCityParking]()
+
+</details>
+<details>
+<summary>`/city/{cityName}/trains/stops`</summary>
+
+- [RequestID]()
+- [Logger]()
+- [Recoverer]()
+- [URLFormat]()
+- [main.main.SetContentType.func2]()
+- **/city**
+	- **/{cityName}**
+		- **/trains**
+			- **/stops**
+				- _GET_
+					- [main.GetRailwayStops]()
+
+</details>
+<details>
 <summary>`/city/{cityName}/transport/stops`</summary>
 
 - [RequestID]()
@@ -37,5 +71,5 @@ Navigator app docs
 
 </details>
 
-Total # of routes: 2
+Total # of routes: 4
 

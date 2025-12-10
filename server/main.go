@@ -1,18 +1,13 @@
 package main
 
 import (
-	//"context"
-	//"errors"
 	"flag"
 	"fmt"
-	//"math/rand"
-	"net/http"
-	//"strings"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/docgen"
 	"github.com/go-chi/render"
+	"net/http"
 )
 
 var routes = flag.Bool("routes", false, "Generate router documentation")
@@ -55,20 +50,6 @@ func main() {
 	http.ListenAndServe(":3333", r)
 }
 
-type CitiesResponse struct {
-	Cities []string `json:"cities"`
-}
-
-func (rd *CitiesResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	return nil
-}
-
 func SupportedCities() []string {
 	return []string{"Wrocław", "Warszawa", "Łódź", "Kraków", "Opole"}
-}
-
-func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
-	cityList := CitiesResponse{Cities: SupportedCities()}
-
-	render.Render(w, r, &cityList)
 }
