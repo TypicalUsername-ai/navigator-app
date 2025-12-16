@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"sync"
 
 	"encoding/json"
 	"fmt"
@@ -9,6 +10,14 @@ import (
 	"io"
 	"net/url"
 	"time"
+)
+
+// Cache with 1 hour TTL
+var (
+	railwayCache     []RailwayStop
+	railwayCacheMu   sync.RWMutex
+	railwayCachedAt  time.Time
+	railwayCacheTTL  = 1 * time.Hour
 )
 
 type RailwayStopsResponse struct {
@@ -67,14 +76,24 @@ type RailwayStopsQuery struct {
 }
 
 func AllRailwayStops() []RailwayStop {
+	// Check cache first
+	railwayCacheMu.RLock()
+	if len(railwayCache) > 0 && time.Since(railwayCachedAt) < railwayCacheTTL {
+		stops := railwayCache
+		railwayCacheMu.RUnlock()
+		fmt.Printf("[AllRailwayStops] cache hit\n")
+		return stops
+	}
+	railwayCacheMu.RUnlock()
 
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="Polska"]->.searchArea;nwr["public_transport"="station"]["railway"="station"]["wikipedia"](area.searchArea);out geom;`)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
-		panic(err)
+		fmt.Printf("[AllRailwayStops] error: %v\n", err)
+		return []RailwayStop{}
 	}
+	defer response.Body.Close()
 
 	fmt.Printf("[AllRailwayStops] => %v\n", response.Status)
 
@@ -92,13 +111,15 @@ func AllRailwayStops() []RailwayStop {
 	stops := []RailwayStop{}
 
 	for _, stop := range stopsData.Elements {
-
 		newStop := RailwayStop{OsmID: stop.ID, Lat: stop.Lat, Lon: stop.Lon, Name: stop.Tags.Name}
-
 		stops = append(stops, newStop)
-
 	}
 
-	return stops
+	// Store in cache
+	railwayCacheMu.Lock()
+	railwayCache = stops
+	railwayCachedAt = time.Now()
+	railwayCacheMu.Unlock()
 
+	return stops
 }
