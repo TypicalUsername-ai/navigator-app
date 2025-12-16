@@ -38,7 +38,7 @@ function StopInput({ placeholder, value, onChange, stops, icon }: StopInputProps
   const suggestions = useMemo(() => {
     if (!value.trim()) return [];
     const query = value.toLowerCase();
-    return stops.filter((stop) => stop.toLowerCase().includes(query));
+    return stops.filter((stop) => stop.toLowerCase().startsWith(query));
   }, [value, stops]);
 
   const showSuggestions = isFocused && suggestions.length > 0;
