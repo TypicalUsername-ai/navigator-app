@@ -12,13 +12,8 @@ import {
   type Passenger,
   type TrainTicket,
 } from "~/lib/mock";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "~/components/ui/card";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3333";
 
 const CITY_COORDS: Record<string, [number, number]> = {
   Warszawa: [52.2297, 21.0122],
@@ -28,10 +23,20 @@ const CITY_COORDS: Record<string, [number, number]> = {
   Poznań: [52.4064, 16.9252],
 };
 
+type RailwayStop = {
+  OsmID: number;
+  Lat: number;
+  Lon: number;
+  Name: string;
+};
+
 export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
   const [query, setQuery] = useState<TrainSearchParams | null>(null);
   const [tickets, setTickets] = useState<TrainTicket[]>([]);
   const [passengers, setPassengers] = useState<Passenger[]>([]);
+  const [stations, setStations] = useState<string[]>([]);
+  const [loadingStations, setLoadingStations] = useState(false);
+  const [stationsError, setStationsError] = useState<string | null>(null);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -42,6 +47,41 @@ export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
       setPassengers(p);
     })();
   }, []);
+
+  useEffect(() => {
+    const abort = new AbortController();
+
+    const fetchStations = async () => {
+      try {
+        setLoadingStations(true);
+        setStationsError(null);
+        const res = await fetch(`${API_BASE_URL}/city/${encodeURIComponent(city)}/trains/stops`, {
+          signal: abort.signal,
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to load stations (${res.status})`);
+        }
+        const data = await res.json();
+        const items: RailwayStop[] = Array.isArray(data?.stops) ? data.stops : [];
+        const names = Array.from(
+          new Set(
+            items.map((s) => s.Name).filter(Boolean)
+          )
+        );
+        setStations(names);
+      } catch (err) {
+        if (abort.signal.aborted) return;
+        setStationsError(err instanceof Error ? err.message : "Failed to load stations");
+      } finally {
+        if (!abort.signal.aborted) {
+          setLoadingStations(false);
+        }
+      }
+    };
+
+    fetchStations();
+    return () => abort.abort();
+  }, [city]);
 
   const { markers, path } = useMemo(() => {
     if (!query) return { markers: [], path: [] };
@@ -72,8 +112,14 @@ export default function TrainsPage({ city, onSearch }: TrainsPageParams) {
       </div>
       <h1 className="text-2xl font-bold">Trains</h1>
 
-      {/* <TrainSearch onSearch={setQuery} /> */}
-      <TrainRouteForm city={city} onSearch={onSearch} />
+      {loadingStations && (
+        <p className="text-sm text-gray-500">Loading stations...</p>
+      )}
+      {stationsError && (
+        <p className="text-sm text-red-600">{stationsError}</p>
+      )}
+
+      <TrainRouteForm city={city} onSearch={onSearch} stations={stations} />
 
       <div className="w-96">
         <TrainMap
