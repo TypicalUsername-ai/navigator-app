@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"sync"
 
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,18 @@ import (
 	"net/url"
 	"time"
 )
+
+// Cache with 1 hour TTL
+var (
+	stopsCache    = make(map[string]stopsCacheEntry)
+	stopsCacheMu  sync.RWMutex
+	stopsCacheTTL = 1 * time.Hour
+)
+
+type stopsCacheEntry struct {
+	stops     []TransportStop
+	fetchedAt time.Time
+}
 
 type CityStopsResponse struct {
 	Stops []TransportStop `json:"stops"`
@@ -71,14 +84,23 @@ type CityStopsQuery struct {
 }
 
 func GetStops(city string) []TransportStop {
+	// Check cache first
+	stopsCacheMu.RLock()
+	if entry, ok := stopsCache[city]; ok && time.Since(entry.fetchedAt) < stopsCacheTTL {
+		stopsCacheMu.RUnlock()
+		fmt.Printf("[GetStops] cache hit for %s\n", city)
+		return entry.stops
+	}
+	stopsCacheMu.RUnlock()
 
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;(node["public_transport"="platform"]["bus"="yes"](area.searchArea);node["public_transport"="platform"]["tram"="yes"](area.searchArea););out geom;`, city)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
-		panic(err)
+		fmt.Printf("[GetStops] error: %v\n", err)
+		return []TransportStop{}
 	}
+	defer response.Body.Close()
 
 	fmt.Printf("[GetStops] => %v\n", response.Status)
 
@@ -96,13 +118,14 @@ func GetStops(city string) []TransportStop {
 	stops := []TransportStop{}
 
 	for _, stop := range stopsData.Elements {
-
 		newStop := TransportStop{OsmID: stop.ID, Lat: stop.Lat, Lon: stop.Lon, Tram: stop.Tags.Tram == "yes", Bus: stop.Tags.Bus == "yes", Name: stop.Tags.Name}
-
 		stops = append(stops, newStop)
-
 	}
 
-	return stops
+	// Store in cache
+	stopsCacheMu.Lock()
+	stopsCache[city] = stopsCacheEntry{stops: stops, fetchedAt: time.Now()}
+	stopsCacheMu.Unlock()
 
+	return stops
 }

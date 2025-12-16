@@ -7,7 +7,16 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
+)
+
+// Cache with 1 hour TTL
+var (
+	citiesCache      []City
+	citiesCacheMu    sync.RWMutex
+	citiesCachedAt   time.Time
+	citiesCacheTTL   = 1 * time.Hour
 )
 
 type CitiesResponse struct {
@@ -67,20 +76,30 @@ type CityBoundsResponse struct {
 }
 
 func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
+	// Check cache first
+	citiesCacheMu.RLock()
+	if len(citiesCache) > 0 && time.Since(citiesCachedAt) < citiesCacheTTL {
+		cities := citiesCache
+		citiesCacheMu.RUnlock()
+		fmt.Printf("[SuppCityBoundaries] cache hit\n")
+		render.Render(w, r, &CitiesResponse{Cities: cities})
+		return
+	}
+	citiesCacheMu.RUnlock()
 
 	param := ""
 
 	for _, name := range SupportedCities() {
-
 		param += fmt.Sprintf(`nwr["name"="%v"]["type"="boundary"]["admin_level"~"[6,7]"];`, name)
 	}
 	var query = fmt.Sprintf(`[out:json][timeout:25];(%v);out geom;`, param)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
 		panic(err)
 	}
+	defer response.Body.Close()
+
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
@@ -100,8 +119,13 @@ func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
 		lat := (data.Bounds.Maxlat + data.Bounds.Minlat) / 2
 		lon := (data.Bounds.Maxlon + data.Bounds.Minlon) / 2
 		cities = append(cities, City{Name: data.Tags.Name, Lat: lat, Lon: lon})
-
 	}
+
+	// Store in cache
+	citiesCacheMu.Lock()
+	citiesCache = cities
+	citiesCachedAt = time.Now()
+	citiesCacheMu.Unlock()
 
 	cityList := CitiesResponse{Cities: cities}
 

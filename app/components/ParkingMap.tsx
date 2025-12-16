@@ -13,16 +13,24 @@ interface Parking {
   price: number;
 }
 
+interface MapCenter {
+  lat: number;
+  lng: number;
+  zoom?: number;
+}
+
 interface ParkingMapProps {
   parkings: Parking[];
   selectedParking: Parking | null;
   onSelectParking: (parking: Parking) => void;
+  mapCenter?: MapCenter;
 }
 
 export default function ParkingMap({
   parkings,
   selectedParking,
   onSelectParking,
+  mapCenter,
 }: ParkingMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
@@ -31,9 +39,14 @@ export default function ParkingMap({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
+    const initialCenter = mapCenter ?? { lat: 52.2297, lng: 21.0122, zoom: 13 }; // Default to Warszawa if we don't have city yet
+
     mapRef.current = L.map(containerRef.current, {
       zoomControl: false, // Disable default zoom control
-    }).setView([40.7648, -73.9776], 14);
+    }).setView(
+      [initialCenter.lat, initialCenter.lng],
+      initialCenter.zoom ?? 14,
+    );
 
     // Add zoom control to top-right corner
     L.control.zoom({ position: "topright" }).addTo(mapRef.current);
@@ -49,7 +62,17 @@ export default function ParkingMap({
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [mapCenter]);
+
+  useEffect(() => {
+    if (mapRef.current && mapCenter) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setView(
+        [mapCenter.lat, mapCenter.lng],
+        mapCenter.zoom ?? currentZoom ?? 13,
+      );
+    }
+  }, [mapCenter]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -58,7 +81,8 @@ export default function ParkingMap({
     markersRef.current.clear();
 
     parkings.forEach((parking) => {
-      const availabilityPercent = parking.available / parking.total;
+      const availabilityPercent =
+        parking.total > 0 ? parking.available / parking.total : 0;
 
       const markerColor =
         selectedParking?.id === parking.id

@@ -8,8 +8,21 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"sync"
 	"time"
 )
+
+// Cache with 1 hour TTL
+var (
+	parkingCache    = make(map[string]parkingCacheEntry)
+	parkingCacheMu  sync.RWMutex
+	parkingCacheTTL = 1 * time.Hour
+)
+
+type parkingCacheEntry struct {
+	spots     []ParkingSpot
+	fetchedAt time.Time
+}
 
 type CityParkingResponse struct {
 	Stops []ParkingSpot `json:"stops"`
@@ -88,14 +101,23 @@ type CityParkingQuery struct {
 }
 
 func CityParkingSpots(city string) []ParkingSpot {
+	// Check cache first
+	parkingCacheMu.RLock()
+	if entry, ok := parkingCache[city]; ok && time.Since(entry.fetchedAt) < parkingCacheTTL {
+		parkingCacheMu.RUnlock()
+		fmt.Printf("[GetCityParking] cache hit for %s\n", city)
+		return entry.spots
+	}
+	parkingCacheMu.RUnlock()
 
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;nwr["amenity"="parking"]["access"!~"(private|customers)"]["capacity"~"[0-9]+"](area.searchArea);out geom;`, city)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
-	defer response.Body.Close()
 	if err != nil {
-		panic(err)
+		fmt.Printf("[GetCityParking] error: %v\n", err)
+		return []ParkingSpot{}
 	}
+	defer response.Body.Close()
 
 	fmt.Printf("[GetCityParking] => %v\n", response.Status)
 
@@ -131,7 +153,6 @@ func CityParkingSpots(city string) []ParkingSpot {
 			for _, data := range spot.Geometry {
 				lats += data.Lat
 				lons += data.Lon
-
 			}
 
 			lat := lats / float64(len(spot.Geometry))
@@ -143,9 +164,12 @@ func CityParkingSpots(city string) []ParkingSpot {
 		}
 
 		spots = append(spots, newSpot)
-
 	}
 
-	return spots
+	// Store in cache
+	parkingCacheMu.Lock()
+	parkingCache[city] = parkingCacheEntry{spots: spots, fetchedAt: time.Now()}
+	parkingCacheMu.Unlock()
 
+	return spots
 }
