@@ -7,7 +7,16 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
+)
+
+// Cache with 1 hour TTL
+var (
+	citiesCache      []City
+	citiesCacheMu    sync.RWMutex
+	citiesCachedAt   time.Time
+	citiesCacheTTL   = 1 * time.Hour
 )
 
 type CitiesResponse struct {
@@ -67,6 +76,16 @@ type CityBoundsResponse struct {
 }
 
 func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
+	// Check cache first
+	citiesCacheMu.RLock()
+	if len(citiesCache) > 0 && time.Since(citiesCachedAt) < citiesCacheTTL {
+		cities := citiesCache
+		citiesCacheMu.RUnlock()
+		fmt.Printf("[SuppCityBoundaries] cache hit\n")
+		render.Render(w, r, &CitiesResponse{Cities: cities})
+		return
+	}
+	citiesCacheMu.RUnlock()
 
 	param := ""
 
@@ -101,6 +120,12 @@ func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
 		lon := (data.Bounds.Maxlon + data.Bounds.Minlon) / 2
 		cities = append(cities, City{Name: data.Tags.Name, Lat: lat, Lon: lon})
 	}
+
+	// Store in cache
+	citiesCacheMu.Lock()
+	citiesCache = cities
+	citiesCachedAt = time.Now()
+	citiesCacheMu.Unlock()
 
 	cityList := CitiesResponse{Cities: cities}
 

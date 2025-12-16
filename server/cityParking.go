@@ -8,8 +8,21 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"sync"
 	"time"
 )
+
+// Cache with 1 hour TTL
+var (
+	parkingCache    = make(map[string]parkingCacheEntry)
+	parkingCacheMu  sync.RWMutex
+	parkingCacheTTL = 1 * time.Hour
+)
+
+type parkingCacheEntry struct {
+	spots     []ParkingSpot
+	fetchedAt time.Time
+}
 
 type CityParkingResponse struct {
 	Stops []ParkingSpot `json:"stops"`
@@ -88,6 +101,14 @@ type CityParkingQuery struct {
 }
 
 func CityParkingSpots(city string) []ParkingSpot {
+	// Check cache first
+	parkingCacheMu.RLock()
+	if entry, ok := parkingCache[city]; ok && time.Since(entry.fetchedAt) < parkingCacheTTL {
+		parkingCacheMu.RUnlock()
+		fmt.Printf("[GetCityParking] cache hit for %s\n", city)
+		return entry.spots
+	}
+	parkingCacheMu.RUnlock()
 
 	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;nwr["amenity"="parking"]["access"!~"(private|customers)"]["capacity"~"[0-9]+"](area.searchArea);out geom;`, city)
 
@@ -144,6 +165,11 @@ func CityParkingSpots(city string) []ParkingSpot {
 
 		spots = append(spots, newSpot)
 	}
+
+	// Store in cache
+	parkingCacheMu.Lock()
+	parkingCache[city] = parkingCacheEntry{spots: spots, fetchedAt: time.Now()}
+	parkingCacheMu.Unlock()
 
 	return spots
 }
