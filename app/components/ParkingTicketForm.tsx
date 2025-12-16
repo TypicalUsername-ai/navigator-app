@@ -108,9 +108,9 @@ export default function ParkingTicketForm({
           </p>
           <div className="flex flex-wrap gap-2 text-[10px] sm:gap-3 sm:text-xs md:text-sm">
             <div className="flex justify-between gap-2">
-              <span className="text-gray-600">Available:</span>
+              <span className="text-gray-600">Capacity:</span>
               <span className="font-semibold">
-                {selectedParking.available}/{selectedParking.total}
+                {selectedParking.available}
               </span>
             </div>
             <div className="flex justify-between gap-2">

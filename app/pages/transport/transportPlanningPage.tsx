@@ -68,8 +68,7 @@ export default function TransportPlanningPage({
         new Set(
           stops
             .map((s) => s.name ?? s.Name ?? "")
-            .filter(Boolean)
-            .slice(0, 20),
+            .filter(Boolean),
         ),
       ),
     [stops],
@@ -81,36 +80,18 @@ export default function TransportPlanningPage({
         <BackButton onClick={() => navigate(`/${params.city}`)} />
       </div>
       <h1 className="text-2xl font-bold">City transport</h1>
-      <TransportRouteForm city={city} onSearch={onSearch} />
+      <TransportRouteForm city={city} onSearch={onSearch} stops={stopNames} />
+      {loadingStops && (
+        <p className="text-sm text-gray-500">Loading stops...</p>
+      )}
+      {stopsError && (
+        <p className="text-sm text-red-600">{stopsError}</p>
+      )}
       <RoutesQuickAccess
         routes={recentRoutes}
         onRouteClick={onRouteClick}
         onRoutesExpand={onRoutesExpand}
       />
-      <div className="w-full max-w-96">
-        <h2 className="mb-2 text-lg font-semibold">City stops</h2>
-        {loadingStops && (
-          <p className="text-sm text-gray-600">Loading stops for {city}…</p>
-        )}
-        {stopsError && (
-          <p className="text-sm text-red-700">Could not load stops: {stopsError}</p>
-        )}
-        {!loadingStops && !stopsError && stopNames.length === 0 && (
-          <p className="text-sm text-gray-600">No stops found.</p>
-        )}
-        {!loadingStops && !stopsError && stopNames.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {stopNames.map((name) => (
-              <span
-                key={name}
-                className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-800"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
       <TicketsQuickAccess />
     </div>
   );
