@@ -146,6 +146,33 @@ export default function ParkingMapPage() {
     return () => abort.abort();
   }, [params.city]);
 
+  if (loading || !mapCenter) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-gray-100">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="text-gray-600">
+            Loading parking data for {params.city}...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-gray-100">
+        <div className="absolute top-3 left-3 z-20 sm:top-4 sm:left-4">
+          <BackButton onClick={() => navigate(`/${params.city}`)} />
+        </div>
+        <div className="rounded-md bg-red-100 px-6 py-4 text-red-800 shadow">
+          <p className="font-medium">Failed to load parking data</p>
+          <p className="text-sm mt-1">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative-z-0 flex h-screen w-screen flex-col items-center justify-center gap-1">
       <div className="absolute top-3 left-3 z-20 sm:top-4 sm:left-4">
@@ -156,25 +183,13 @@ export default function ParkingMapPage() {
           parkings={parkings}
           selectedParking={selectedParking}
           onSelectParking={setSelectedParking}
-          mapCenter={mapCenter ?? undefined}
+          mapCenter={mapCenter}
         />
       </div>
 
-      {!loading && !error && parkings.length === 0 && (
-        <div className="absolute top-4 left-1/2 z-20 -translate-x-1/2 rounded-md bg-white/90 px-3 py-2 text-sm shadow">
+      {parkings.length === 0 && (
+        <div className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white/90 px-4 py-3 text-sm shadow">
           No parking spots found for {params.city}.
-        </div>
-      )}
-
-      {loading && (
-        <div className="absolute top-4 left-1/2 z-20 -translate-x-1/2 rounded-md bg-white/90 px-3 py-2 text-sm shadow">
-          Loading parking data...
-        </div>
-      )}
-
-      {error && (
-        <div className="absolute top-4 left-1/2 z-20 -translate-x-1/2 rounded-md bg-red-100 px-3 py-2 text-sm text-red-800 shadow">
-          {error}
         </div>
       )}
 
