@@ -38,7 +38,7 @@ function StationInput({ placeholder, value, onChange, stations, icon }: StationI
   const suggestions = useMemo(() => {
     if (!value.trim()) return [];
     const query = value.toLowerCase();
-    return stations.filter((station) => station.toLowerCase().includes(query));
+    return stations.filter((station) => station.toLowerCase().startsWith(query));
   }, [value, stations]);
 
   const showSuggestions = isFocused && suggestions.length > 0;
