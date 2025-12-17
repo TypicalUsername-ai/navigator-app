@@ -17,6 +17,12 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+
 import TicketCard, { type TicketCardProps } from "~/components/ticketCard";
 
 export default function TicketDrawer() {
@@ -63,9 +69,14 @@ export default function TicketDrawer() {
   ];
   return (
     <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant="outline">My tickets</Button>
-      </DrawerTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DrawerTrigger asChild>
+            <Button variant="outline">My tickets</Button>
+          </DrawerTrigger>
+        </TooltipTrigger>
+        <TooltipContent>See all your active tickets</TooltipContent>
+      </Tooltip>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
