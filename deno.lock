@@ -6,6 +6,7 @@
     "npm:@radix-ui/react-popover@^1.1.15": "1.1.15_@types+react@19.2.6_@types+react-dom@19.2.3__@types+react@19.2.6_react@19.2.0_react-dom@19.2.0__react@19.2.0",
     "npm:@radix-ui/react-select@^2.2.6": "2.2.6_@types+react@19.2.6_@types+react-dom@19.2.3__@types+react@19.2.6_react@19.2.0_react-dom@19.2.0__react@19.2.0",
     "npm:@radix-ui/react-slot@^1.2.4": "1.2.4_@types+react@19.2.6_react@19.2.0",
+    "npm:@radix-ui/react-tooltip@^1.2.8": "1.2.8_@types+react@19.2.6_@types+react-dom@19.2.3__@types+react@19.2.6_react@19.2.0_react-dom@19.2.0__react@19.2.0",
     "npm:@react-router/dev@^7.9.2": "7.9.6_@react-router+serve@7.9.6__react-router@7.9.6___react@19.2.0___react-dom@19.2.0____react@19.2.0__express@4.21.2__typescript@5.9.3__react@19.2.0__react-dom@19.2.0___react@19.2.0_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_typescript@5.9.3_vite@7.2.4__@types+node@22.19.1__picomatch@4.0.3_@babel+core@7.28.5_react@19.2.0_react-dom@19.2.0__react@19.2.0_@types+node@22.19.1",
     "npm:@react-router/node@^7.9.2": "7.9.6_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_typescript@5.9.3_react@19.2.0_react-dom@19.2.0__react@19.2.0",
     "npm:@react-router/serve@^7.9.2": "7.9.6_react-router@7.9.6__react@19.2.0__react-dom@19.2.0___react@19.2.0_express@4.21.2_typescript@5.9.3_react@19.2.0_react-dom@19.2.0__react@19.2.0",
@@ -1415,6 +1416,31 @@
       ],
       "optionalPeers": [
         "@types/react"
+      ]
+    },
+    "@radix-ui/react-tooltip@1.2.8_@types+react@19.2.6_@types+react-dom@19.2.3__@types+react@19.2.6_react@19.2.0_react-dom@19.2.0__react@19.2.0": {
+      "integrity": "sha512-tY7sVt1yL9ozIxvmbtN5qtmH2krXcBCfjEiCgKGLqunJHvgvZG2Pcl2oQ3kbcZARb1BGEHdkLzcYGO8ynVlieg==",
+      "dependencies": [
+        "@radix-ui/primitive",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-context",
+        "@radix-ui/react-dismissable-layer",
+        "@radix-ui/react-id",
+        "@radix-ui/react-popper",
+        "@radix-ui/react-portal",
+        "@radix-ui/react-presence",
+        "@radix-ui/react-primitive@2.1.3_@types+react@19.2.6_@types+react-dom@19.2.3__@types+react@19.2.6_react@19.2.0_react-dom@19.2.0__react@19.2.0",
+        "@radix-ui/react-slot@1.2.3_@types+react@19.2.6_react@19.2.0",
+        "@radix-ui/react-use-controllable-state",
+        "@radix-ui/react-visually-hidden",
+        "@types/react",
+        "@types/react-dom",
+        "react",
+        "react-dom"
+      ],
+      "optionalPeers": [
+        "@types/react",
+        "@types/react-dom"
       ]
     },
     "@radix-ui/react-use-callback-ref@1.1.1_@types+react@19.2.6_react@19.2.0": {
@@ -4399,6 +4425,7 @@
         "npm:@radix-ui/react-popover@^1.1.15",
         "npm:@radix-ui/react-select@^2.2.6",
         "npm:@radix-ui/react-slot@^1.2.4",
+        "npm:@radix-ui/react-tooltip@^1.2.8",
         "npm:@react-router/dev@^7.9.2",
         "npm:@react-router/node@^7.9.2",
         "npm:@react-router/serve@^7.9.2",
