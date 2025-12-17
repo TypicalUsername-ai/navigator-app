@@ -13,10 +13,10 @@ import (
 
 // Cache with 1 hour TTL
 var (
-	citiesCache      []City
-	citiesCacheMu    sync.RWMutex
-	citiesCachedAt   time.Time
-	citiesCacheTTL   = 1 * time.Hour
+	citiesCache    []City
+	citiesCacheMu  sync.RWMutex
+	citiesCachedAt time.Time
+	citiesCacheTTL = 1 * time.Hour
 )
 
 type CitiesResponse struct {
@@ -34,12 +34,7 @@ func (rd *CitiesResponse) Render(w http.ResponseWriter, r *http.Request) error {
 }
 
 type CityBoundsResponse struct {
-	Version   float64 `json:"version"`
-	Generator string  `json:"generator"`
-	Osm3S     struct {
-		TimestampOsmBase time.Time `json:"timestamp_osm_base"`
-		Copyright        string    `json:"copyright"`
-	} `json:"osm3s"`
+	*OsmResponseHeaders
 	Elements []struct {
 		Type   string `json:"type"`
 		ID     int    `json:"id"`

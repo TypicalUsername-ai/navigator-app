@@ -14,10 +14,10 @@ import (
 
 // Cache with 1 hour TTL
 var (
-	railwayCache     []RailwayStop
-	railwayCacheMu   sync.RWMutex
-	railwayCachedAt  time.Time
-	railwayCacheTTL  = 1 * time.Hour
+	railwayCache    []RailwayStop
+	railwayCacheMu  sync.RWMutex
+	railwayCachedAt time.Time
+	railwayCacheTTL = 1 * time.Hour
 )
 
 type RailwayStopsResponse struct {
@@ -47,13 +47,7 @@ func GetRailwayStops(w http.ResponseWriter, r *http.Request) {
 }
 
 type RailwayStopsQuery struct {
-	Version   float64 `json:"version"`
-	Generator string  `json:"generator"`
-	Osm3S     struct {
-		TimestampOsmBase   time.Time `json:"timestamp_osm_base"`
-		TimestampAreasBase time.Time `json:"timestamp_areas_base"`
-		Copyright          string    `json:"copyright"`
-	} `json:"osm3s"`
+	*OsmResponseHeaders
 	Elements []struct {
 		Type string  `json:"type"`
 		ID   int     `json:"id"`

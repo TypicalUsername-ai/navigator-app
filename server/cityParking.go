@@ -52,13 +52,7 @@ func GetCityParking(w http.ResponseWriter, r *http.Request) {
 }
 
 type CityParkingQuery struct {
-	Version   float64 `json:"version"`
-	Generator string  `json:"generator"`
-	Osm3S     struct {
-		TimestampOsmBase   time.Time `json:"timestamp_osm_base"`
-		TimestampAreasBase time.Time `json:"timestamp_areas_base"`
-		Copyright          string    `json:"copyright"`
-	} `json:"osm3s"`
+	*OsmResponseHeaders
 	Elements []struct {
 		Type string  `json:"type"`
 		ID   int     `json:"id"`
