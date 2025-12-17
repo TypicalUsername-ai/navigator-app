@@ -8,6 +8,11 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/components/ui/empty";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 export default function EmptyCity({ onLogin, onCitySelect }: EmptyCityProps) {
   return (
@@ -23,10 +28,24 @@ export default function EmptyCity({ onLogin, onCitySelect }: EmptyCityProps) {
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <Button onClick={onCitySelect}>Select City</Button>
-          <Button onClick={onLogin} variant="outline">
-            Log In
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={onCitySelect}>Select City</Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              pick a city and start using the application right away
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={onLogin} variant="outline">
+                Log In
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              click if you already have an existing account and want to log in
+            </TooltipContent>
+          </Tooltip>
         </div>
       </EmptyContent>
       <Button
