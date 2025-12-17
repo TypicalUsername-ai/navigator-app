@@ -6,6 +6,11 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 export default function CitySelector({
   cities,
@@ -13,28 +18,35 @@ export default function CitySelector({
 }: CitySelectorProps) {
   return (
     <Carousel
-      className="w-full m-2 max-h-96"
+      className="m-2 max-h-96 w-full"
       orientation="vertical"
       opts={{ align: "start", loop: true }}
     >
       <CarouselPrevious />
       <CarouselNext />
-      <CarouselContent className="h-2/5 max-h-96">
-        {cities.map((name, index) => (
-          <CarouselItem
-            className="basis-1/6 pl-1 flex flex-col items-center"
-            key={index}
-          >
-            <Button
-              onClick={() => onCitySelect(name)}
-              className="p-1 w-3/5 max-w-96"
-              size="lg"
-            >
-              {name}
-            </Button>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <CarouselContent className="h-2/5 max-h-96">
+            {cities.map((name, index) => (
+              <CarouselItem
+                className="flex basis-1/6 flex-col items-center pl-1"
+                key={index}
+              >
+                <Button
+                  onClick={() => onCitySelect(name)}
+                  className="w-3/5 max-w-96 p-1"
+                  size="lg"
+                >
+                  {name}
+                </Button>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </TooltipTrigger>
+        <TooltipContent>
+          Select a city you would like to search parking & public transport in
+        </TooltipContent>
+      </Tooltip>
     </Carousel>
   );
 }
