@@ -23,6 +23,7 @@ func trainRouter() chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/stops", GetRailwayStops)
+	r.Get("/route", GetTrainRoute)
 
 	return r
 
