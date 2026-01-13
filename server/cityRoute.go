@@ -82,13 +82,6 @@ type RelationsGeomQuery struct {
 	} `json:"elements"`
 }
 
-type TransportTripPart struct {
-	Info              OSMGeometry
-	DistanceRemaining float64
-	StopsNo           int
-	PossibleMethods   []int
-}
-
 func GetNamedStops(city string, name string) (*[]OSMTransportStop, error) {
 	var point_query = fmt.Sprintf(`
 	[out:json];
@@ -123,7 +116,7 @@ func GetNamedStops(city string, name string) (*[]OSMTransportStop, error) {
 	return &stopsData.Elements, nil
 }
 
-func Center(i []OSMGeometry) [2]float64 {
+func Center(i []OSMTransportStop) [2]float64 {
 	print(i)
 	end_lat := 0.0
 	end_lon := 0.0
@@ -151,12 +144,12 @@ func Haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	return radius_km * c
 }
 
-func SearchCityRoute(tripstack []TransportTripPart, targets []OSMGeometry, stopMap map[int][]TransportTripPart) ([]TransportTripPart, error) {
-	last_stop_id := tripstack[len(tripstack)-1].Info.OsmID()
+func GetAllReachableStops(source OSMTransportStop) (*[]OSMTransportStop, error) {
 	var query = fmt.Sprintf(`[out:json];
 			node(%v) -> .startPoint;
 			rel(bn.startPoint);
-			out geom;`, last_stop_id)
+			node(r)[public_transport=stop_position];
+			out;`, source.ID)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
 
@@ -164,7 +157,7 @@ func SearchCityRoute(tripstack []TransportTripPart, targets []OSMGeometry, stopM
 		return nil, err
 	}
 	if response.StatusCode != 200 {
-		return nil, errors.New("non-200 response " + string(response.StatusCode))
+		return nil, fmt.Errorf("non-200 response [%v]", response.StatusCode)
 	}
 	defer response.Body.Close()
 
@@ -172,7 +165,7 @@ func SearchCityRoute(tripstack []TransportTripPart, targets []OSMGeometry, stopM
 	if err != nil {
 		return nil, err
 	}
-	stopsData := RelationsGeomQuery{}
+	stopsData := CityStopsQuery{}
 
 	err = json.Unmarshal(bodyBytes, &stopsData)
 	if err != nil {
@@ -180,82 +173,51 @@ func SearchCityRoute(tripstack []TransportTripPart, targets []OSMGeometry, stopM
 		return nil, err
 	}
 
-	target_center := Center(targets)
-
-	var new_items [][]TransportTripPart
-
-	for _, route := range stopsData.Elements {
-
-		//fmt.Println(idx, route.Tags.Name)
-		past_start := false
-		stop_distance := 0
-		for _, child := range route.Members {
-
-			for _, tgt := range targets {
-				if tgt.OsmID() == child.OsmID() {
-					distance := Haversine(child.Lat, child.Lon, target_center[0], target_center[1])
-					transport := TransportTripPart{Info: child, DistanceRemaining: distance, StopsNo: stop_distance, PossibleMethods: []int{route.ID}}
-					trip := append(tripstack, transport)
-					return trip, nil
-				}
-
-			}
-			if child.OsmID() == last_stop_id {
-				past_start = true
-				// to not include the stop logic on the initial stop
-			}
-			if child.Role == "stop" && past_start {
-				refd := stopMap[child.Ref]
-
-				if refd != nil {
-					refd[len(refd)-1].PossibleMethods = append(refd[len(refd)-1].PossibleMethods, route.ID)
-					//think of some logic here
-					// replace if shorter path TODO
-					// append if new method
-					stopMap[child.Ref] = refd
-
-				} else {
-					distance := Haversine(child.Lat, child.Lon, target_center[0], target_center[1])
-					transport := TransportTripPart{Info: child, DistanceRemaining: distance, StopsNo: stop_distance, PossibleMethods: []int{route.ID}}
-					trip := append(tripstack, transport)
-					stopMap[child.Ref] = trip
-
-					new_items = append(new_items, trip)
-				}
-				stop_distance += 1
-			}
-		}
-	}
-	queue := new_items
-	slices.SortFunc(queue, SortTripParts)
-	fmt.Printf("qdepth: %v | mapsize: %v \n", len(queue), len(stopMap))
-	//fmt.Println(queue[0:10])
-
-	for qid, hops := range queue {
-		hop := hops[len(hops)-1]
-		fmt.Printf("HOP: %v \n", hop)
-		fmt.Printf("[%v] %v/%v \n", hop, qid, len(hops))
-		res, err := SearchCityRoute(append(tripstack, hop), targets, stopMap)
-		if res != nil {
-			return res, err
-		}
-	}
-
-	return nil, errors.New("search exhausted!")
-
+	return &stopsData.Elements, nil
 }
 
-func SortTripParts(a, b []TransportTripPart) int {
-	var dist_a, dist_b float64
-
-	for _, item := range a {
-		dist_a += item.DistanceRemaining
+func SearchCityRoute(tripstack []OSMTransportStop, targets []OSMTransportStop, city string) ([]OSMTransportStop, error) {
+	for _, t := range tripstack {
+		fmt.Printf("%v ->", t.Tags.Name)
 	}
-	for _, item := range b {
-		dist_b += item.DistanceRemaining
+	fmt.Printf("\n")
+	target_center := Center(targets)
+	last_stop := tripstack[len(tripstack)-1]
+	for _, tgt := range targets {
+		if last_stop.OsmID() == tgt.OsmID() {
+			return tripstack, nil
+		}
 	}
+	best_distance := Haversine(last_stop.Latitude(), last_stop.Longtitude(), target_center[0], target_center[1])
+	possible_stops, err := GetNamedStops(city, last_stop.Tags.Name)
+	if err != nil {
+		return nil, err
+	}
+	queue := []OSMTransportStop{}
+	for _, stop := range *possible_stops {
+		reachable_stops, err := GetAllReachableStops(stop)
+		if err != nil {
+			return nil, err
+		}
+		for _, stop := range *reachable_stops {
+			if stop.OsmID() != last_stop.OsmID() && Haversine(stop.Latitude(), stop.Longtitude(), target_center[0], target_center[1]) < best_distance {
+				queue = append(queue, stop)
+			}
+		}
 
-	return cmp.Compare(dist_a, dist_b)
+	}
+	slices.SortFunc(queue, func(a, b OSMTransportStop) int {
+		return cmp.Compare(
+			Haversine(a.Latitude(), a.Longtitude(), target_center[0], target_center[1]),
+			Haversine(b.Latitude(), b.Longtitude(), target_center[0], target_center[1]))
+	})
+	for _, item := range queue {
+		route, err := SearchCityRoute(append(tripstack, item), targets, city)
+		if err == nil {
+			return route, nil
+		}
+	}
+	return nil, errors.New("search exhausted!")
 
 }
 
@@ -266,39 +228,30 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 	if err != nil {
 		panic(err)
 	}
-	endStops, err := GetNamedStops(city, to)
+	endPoints, err := GetNamedStops(city, to)
 
 	if err != nil {
 		panic(err)
 	}
 
-	endPoints := make([]OSMGeometry, len(*endStops))
-	for sid, stop := range *endStops {
-		endPoints[sid] = stop
-	}
-
 	fmt.Println(startPoints)
 	//targetPoint := (*pts)[1]
 
-	center_end := Center(endPoints)
+	center_end := Center(*endPoints)
 
-	for _, target := range *startPoints {
+	for _, start := range *startPoints {
 
-		base_dist := Haversine(target.Latitude(), target.Longtitude(), center_end[0], center_end[1])
+		base_dist := Haversine(start.Latitude(), start.Longtitude(), center_end[0], center_end[1])
 
 		fmt.Println(base_dist)
 
-		tripstack := []TransportTripPart{TransportTripPart{Info: OSMGeometry(target), DistanceRemaining: base_dist, StopsNo: 0, PossibleMethods: []int{}}}
+		tripstack := []OSMTransportStop{start}
 
-		stopMap := make(map[int][]TransportTripPart, 30)
-
-		stopMap[target.OsmID()] = tripstack
-
-		route, err := SearchCityRoute(tripstack, endPoints, stopMap)
+		route, err := SearchCityRoute(tripstack, *endPoints, city)
 
 		fmt.Println("ROUTE: ======")
 		for idx, stop := range route {
-			fmt.Printf("[%v] after %v stops via %v => %v \n", idx, stop.StopsNo, stop.PossibleMethods, stop.Info.OsmID())
+			fmt.Printf("[%v] %v \n", idx, stop)
 		}
 		fmt.Println(err)
 
