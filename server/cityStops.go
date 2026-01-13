@@ -52,35 +52,27 @@ func GetCityStops(w http.ResponseWriter, r *http.Request) {
 	render.Render(w, r, &stops)
 }
 
+type OSMTransportStop struct {
+	Type string  `json:"type"`
+	ID   int     `json:"id"`
+	Lat  float64 `json:"lat"`
+	Lon  float64 `json:"lon"`
+	Tags struct {
+		Name            string `json:"name"`
+		PublicTransport string `json:"public_transport"`
+		Ref             string `json:"ref"`
+		Tram            string `json:"tram"`
+		Bus             string `json:"bus"`
+	} `json:"tags"`
+}
+
+func (s OSMTransportStop) OsmID() int          { return s.ID }
+func (s OSMTransportStop) Latitude() float64   { return s.Lat }
+func (s OSMTransportStop) Longtitude() float64 { return s.Lon }
+
 type CityStopsQuery struct {
-	Version   float64 `json:"version"`
-	Generator string  `json:"generator"`
-	Osm3S     struct {
-		TimestampOsmBase   time.Time `json:"timestamp_osm_base"`
-		TimestampAreasBase time.Time `json:"timestamp_areas_base"`
-		Copyright          string    `json:"copyright"`
-	} `json:"osm3s"`
-	Elements []struct {
-		Type string  `json:"type"`
-		ID   int     `json:"id"`
-		Lat  float64 `json:"lat"`
-		Lon  float64 `json:"lon"`
-		Tags struct {
-			Bench           string `json:"bench"`
-			Bin             string `json:"bin"`
-			DeparturesBoard string `json:"departures_board"`
-			Lit             string `json:"lit"`
-			Name            string `json:"name"`
-			Network         string `json:"network"`
-			Operator        string `json:"operator"`
-			PublicTransport string `json:"public_transport"`
-			Ref             string `json:"ref"`
-			Shelter         string `json:"shelter"`
-			TactilePaving   string `json:"tactile_paving"`
-			Tram            string `json:"tram"`
-			Bus             string `json:"bus"`
-		} `json:"tags"`
-	} `json:"elements"`
+	*OsmResponseHeaders
+	Elements []OSMTransportStop `json:"elements"`
 }
 
 func GetStops(city string) []TransportStop {
@@ -93,7 +85,7 @@ func GetStops(city string) []TransportStop {
 	}
 	stopsCacheMu.RUnlock()
 
-	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;(node["public_transport"="platform"]["bus"="yes"](area.searchArea);node["public_transport"="platform"]["tram"="yes"](area.searchArea););out geom;`, city)
+	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="%v"]->.searchArea;(node["public_transport"="stop_position"]["bus"="yes"](area.searchArea);node["public_transport"="stop_position"]["tram"="yes"](area.searchArea););out geom;`, city)
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
 	if err != nil {
