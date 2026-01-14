@@ -23,6 +23,8 @@ services:
       - "3333:3333"
     volumes:
       - "./server:/app"
+    environment:
+      OVERPASS_API_URL: "http://overpass-api:80"
     entrypoint: "/app/entrypoint.sh"
   overpass-api:
     image: wiktorn/overpass-api

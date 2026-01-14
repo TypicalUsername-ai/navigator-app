@@ -13,12 +13,19 @@ import (
 
 var routes = flag.Bool("routes", false, "Generate router documentation")
 
-// var overpass_api_url = "http://overpass-api.de/api/interpreter?data="
-var overpass_api_url = "http://localhost:5555/api/interpreter?data="
+var overpass_api = flag.String("api_url", "http://overpass-api.de", "Overpass API site")
+
+var overpass_endpoint = flag.String("api_endpoint", "/api/interpreter?data=", "Overpass API endpoint")
+
+//var overpass_api_url = "http://localhost:5555/api/interpreter?data="
+
+var overpass_api_url = fmt.Sprintf("%v%v", *overpass_api, *overpass_endpoint)
 
 func main() {
 	flag.Parse()
-	fmt.Println("Starting navigator server")
+
+	overpass_api_url = fmt.Sprintf("%v%v", *overpass_api, *overpass_endpoint)
+	fmt.Printf("Starting navigator server [overpass api: %v] \n", overpass_api_url)
 
 	r := chi.NewRouter()
 
