@@ -13,6 +13,7 @@ func transportRouter() chi.Router {
 	r.Use(CitiesCtx)
 
 	r.With(CitiesCtx).Get("/stops", GetCityStops)
+	r.With(CitiesCtx).Get("/route", GetCityRoute)
 
 	return r
 
@@ -22,6 +23,7 @@ func trainRouter() chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/stops", GetRailwayStops)
+	r.Get("/route", GetTrainRoute)
 
 	return r
 

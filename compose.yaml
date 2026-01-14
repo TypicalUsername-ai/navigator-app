@@ -4,9 +4,11 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - .:/app
-      - node_modules:/app/node_modules
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules
     entrypoint: "/app/entrypoint.sh"
+    environment:
+      VITE_API_BASE_URL: http://localhost:3333
     deploy:
       resources:
         limits:
@@ -22,6 +24,23 @@ services:
     volumes:
       - "./server:/app"
     entrypoint: "/app/entrypoint.sh"
+  overpass-api:
+    image: wiktorn/overpass-api
+    environment:
+      #OVERPASS_PLANET_PREPROCESS: mv db/planet.osm.bz2 db/planet2.osm.pbf && osmium tags-filter /db/planet2.osm.pbf nw/highway  -o /db/planet.osm.bz2 && rm /db/planet2.osm.pbf
+      OVERPASS_PLANET_PREPROCESS: mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf
+      OVERPASS_COMPRESSION: gz
+      OVERPASS_META: yes
+      OVERPASS_MODE: init
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/poland-latest.osm.pbf
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/poland/minute
+      OVERPASS_ALLOW_DUPLICATE_QUERIES: "yes"
+      OVERPASS_RULES_LOAD: 10
+      OVERPASS_STOP_AFTER_INIT: false
+    ports:
+      - "5555:80"
+    volumes:
+      - ./osm-data:/db
 
 volumes:
   node_modules:

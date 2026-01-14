@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "react-dom/server": "./node_modules/react-dom/server.node.js"
+  }
+}

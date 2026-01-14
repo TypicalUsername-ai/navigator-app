@@ -7,9 +7,15 @@ schema = 3
   [mod."github.com/go-chi/chi/v5"]
     version = "v5.2.3"
     hash = "sha256-fB8KidqJgWrPnnS+0uIKVOO1VRclD6nG1Lt1IeSq2M0="
+  [mod."github.com/go-chi/cors"]
+    version = "v1.2.1"
+    hash = "sha256-j/7WxHXw+gFvDmdkud7Xt4ncwsBlZoWKhig0TQkcyo8="
   [mod."github.com/go-chi/docgen"]
     version = "v1.3.0"
     hash = "sha256-bMulhOCtGrf6K3qVHexJy4pDjVoiGrDX9wKhY5uGFNw="
   [mod."github.com/go-chi/render"]
     version = "v1.0.3"
     hash = "sha256-BnnoCszIVvL2Y7+sD+jR4ZePlscAtQfvLTdbGRWvi1k="
+  [mod."golang.org/x/exp"]
+    version = "v0.0.0-20251209150349-8475f28825e9"
+    hash = "sha256-a4qr2RS8P0tF+fHjMJJNZ5pi+BgR7pif9Ow7rwkzLGM="
