@@ -2,6 +2,8 @@
 .env
 node_modules/
 osm-data/
+db-data/
+matomo/
 # React Router
 .react-router/
 build/

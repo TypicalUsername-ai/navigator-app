@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { useEffect } from 'react'
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -24,6 +25,16 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+
+        useEffect(() => {
+        var _mtm = window._mtm = window._mtm || [];
+  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+  (function() {
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='http://localhost:8080/js/container_jY8poEWZ_dev_0c63c90f1e1e9f8f36b760c7.js'; s.parentNode.insertBefore(g,s);
+  })();
+})
+
   return (
     <html lang="en">
       <head>
