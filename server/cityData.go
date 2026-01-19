@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
@@ -82,14 +83,16 @@ func GetSupportedCities(w http.ResponseWriter, r *http.Request) {
 	}
 	citiesCacheMu.RUnlock()
 
-	param := ""
+	var query strings.Builder
+
+	query.WriteString("[out:json][timeout:25];(")
 
 	for _, name := range SupportedCities() {
-		param += fmt.Sprintf(`nwr["name"="%v"]["type"="boundary"]["admin_level"~"[6,7]"];`, name)
+		fmt.Fprintf(&query, `nwr["name"="%v"]["type"="boundary"]["admin_level"~"[6,7]"];`, name)
 	}
-	var query = fmt.Sprintf(`[out:json][timeout:25];(%v);out geom;`, param)
+	query.WriteString(");out geom;")
 
-	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
+	response, err := http.Get(overpass_api_url + url.QueryEscape(query.String()))
 	if err != nil {
 		panic(err)
 	}
