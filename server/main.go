@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/docgen"
 	"github.com/go-chi/render"
 	"net/http"
+	"sync"
+	"time"
 )
 
 var routes = flag.Bool("routes", false, "Generate router documentation")
@@ -20,6 +22,8 @@ var overpass_endpoint = flag.String("api_endpoint", "/api/interpreter?data=", "O
 //var overpass_api_url = "http://localhost:5555/api/interpreter?data="
 
 var overpass_api_url = fmt.Sprintf("%v%v", *overpass_api, *overpass_endpoint)
+var cityStopsCache = CityStopsCache{ttl: 1 * time.Hour, lock: sync.RWMutex{}, stops: make(map[string]*CityStopsCacheEntry)}
+var trainStopsCache = TrainStopsCache{}
 
 func main() {
 	flag.Parse()
@@ -46,6 +50,7 @@ func main() {
 		r.Get("/list", GetSupportedCities)
 		r.Route("/{cityName}", func(r chi.Router) {
 			//r.Use(CitiesCtx)
+			//r.Get("/tickets", GetTickets)
 			r.Mount("/transport", transportRouter())
 			r.Mount("/trains", trainRouter())
 			r.Mount("/parking", parkingRouter())

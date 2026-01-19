@@ -14,6 +14,7 @@ func transportRouter() chi.Router {
 
 	r.With(CitiesCtx).Get("/stops", GetCityStops)
 	r.With(CitiesCtx).Get("/route", GetCityRoute)
+	//r.With(CitiesCtx).Get("/fares", GetCityFares)
 
 	return r
 
@@ -43,23 +44,12 @@ var CityNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Requested city
 
 func CitiesCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var city string
-		var err error
-
-		cityList := SupportedCities()
-
-		if cityParam := chi.URLParam(r, "cityName"); slices.Contains(cityList, cityParam) {
-			city = cityParam
+		if slices.Contains(SupportedCities(), chi.URLParam(r, "cityName")) {
+			ctx := context.WithValue(r.Context(), "city", chi.URLParam(r, "cityName"))
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			render.Render(w, r, CityNotFound)
 			return
 		}
-		if err != nil {
-			render.Render(w, r, CityNotFound)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), "city", city)
-		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

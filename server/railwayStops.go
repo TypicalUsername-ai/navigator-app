@@ -1,14 +1,12 @@
 package main
 
 import (
-	"net/http"
-	"sync"
-
 	"encoding/json"
-	"fmt"
 	"github.com/go-chi/render"
 	"io"
+	"net/http"
 	"net/url"
+	"sync"
 	"time"
 )
 
@@ -37,13 +35,31 @@ func (rd *RailwayStopsResponse) Render(w http.ResponseWriter, r *http.Request) e
 
 func GetRailwayStops(w http.ResponseWriter, r *http.Request) {
 
+	var trainStops []OSMTransportStop
 	//currentCity := r.Context().Value("city").(string)
+	if len(trainStopsCache.stops) != 0 {
+		trainStops = trainStopsCache.stops
+	} else {
+		trainStops, err := GetAllRailwayStops()
+		if err != nil {
+			panic(err)
+		}
+		trainStopsCache.SetStops(trainStops)
+	}
 
-	railwayStops := AllRailwayStops()
-
-	stops := RailwayStopsResponse{Stops: railwayStops}
+	stops := RailwayStopsResponse{Stops: FormatStations(trainStops)}
 
 	render.Render(w, r, &stops)
+}
+
+func FormatStations(stations []OSMTransportStop) []RailwayStop {
+	stops := make([]RailwayStop, len(stations))
+	for id, stop := range stations {
+		newStop := RailwayStop{OsmID: stop.ID, Lat: stop.Lat, Lon: stop.Lon, Name: stop.Tags.Name}
+		stops[id] = newStop
+	}
+	return stops
+
 }
 
 type RailwayStopsQuery struct {
@@ -69,51 +85,25 @@ type RailwayStopsQuery struct {
 	} `json:"elements"`
 }
 
-func AllRailwayStops() []RailwayStop {
-	// Check cache first
-	railwayCacheMu.RLock()
-	if len(railwayCache) > 0 && time.Since(railwayCachedAt) < railwayCacheTTL {
-		stops := railwayCache
-		railwayCacheMu.RUnlock()
-		fmt.Printf("[AllRailwayStops] cache hit\n")
-		return stops
-	}
-	railwayCacheMu.RUnlock()
-
-	var query = fmt.Sprintf(`[out:json][timeout:25];area["name"="Polska"]->.searchArea;nwr["public_transport"="station"]["railway"="station"]["wikipedia"](area.searchArea);out geom;`)
+func GetAllRailwayStops() ([]OSMTransportStop, error) {
+	var query = `[out:json][timeout:25];area["name"="Polska"]->.searchArea;nwr["public_transport"="stop_position"]["railway"="stop"](area.searchArea);out geom;`
 
 	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
 	if err != nil {
-		fmt.Printf("[AllRailwayStops] error: %v\n", err)
-		return []RailwayStop{}
+		return nil, err
 	}
 	defer response.Body.Close()
 
-	fmt.Printf("[AllRailwayStops] => %v\n", response.Status)
-
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	stopsData := RailwayStopsQuery{}
+	stopsData := CityStopsQuery{}
 
 	err = json.Unmarshal(bodyBytes, &stopsData)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	stops := []RailwayStop{}
-
-	for _, stop := range stopsData.Elements {
-		newStop := RailwayStop{OsmID: stop.ID, Lat: stop.Lat, Lon: stop.Lon, Name: stop.Tags.Name}
-		stops = append(stops, newStop)
-	}
-
-	// Store in cache
-	railwayCacheMu.Lock()
-	railwayCache = stops
-	railwayCachedAt = time.Now()
-	railwayCacheMu.Unlock()
-
-	return stops
+	return stopsData.Elements, nil
 }

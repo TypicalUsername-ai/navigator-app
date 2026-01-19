@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cmp"
+	"container/heap"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"slices"
 )
 
 func GetTrainRoute(w http.ResponseWriter, r *http.Request) {
@@ -56,51 +55,6 @@ func GetNamedStations(name string) (*[]OSMTransportStop, error) {
 	return &stopsData.Elements, nil
 }
 
-func SearchTrainRoute(tripstack []OSMTransportStop, targets []OSMTransportStop) ([]OSMTransportStop, error) {
-	for _, t := range tripstack {
-		fmt.Printf("%v ->", t.Tags.Name)
-	}
-	fmt.Printf("\n")
-	target_center := Center(targets)
-	last_stop := tripstack[len(tripstack)-1]
-	for _, tgt := range targets {
-		if last_stop.OsmID() == tgt.OsmID() {
-			return tripstack, nil
-		}
-	}
-	best_distance := Haversine(last_stop.Latitude(), last_stop.Longtitude(), target_center[0], target_center[1])
-	possible_stops, err := GetNamedStations(last_stop.Tags.Name)
-	if err != nil {
-		return nil, err
-	}
-	queue := []OSMTransportStop{}
-	for _, stop := range *possible_stops {
-		reachable_stops, err := GetAllReachableStations(stop)
-		if err != nil {
-			return nil, err
-		}
-		for _, stop := range *reachable_stops {
-			if stop.OsmID() != last_stop.OsmID() && Haversine(stop.Latitude(), stop.Longtitude(), target_center[0], target_center[1]) < best_distance {
-				queue = append(queue, stop)
-			}
-		}
-
-	}
-	slices.SortFunc(queue, func(a, b OSMTransportStop) int {
-		return cmp.Compare(
-			Haversine(a.Latitude(), a.Longtitude(), target_center[0], target_center[1]),
-			Haversine(b.Latitude(), b.Longtitude(), target_center[0], target_center[1]))
-	})
-	for _, item := range queue {
-		route, err := SearchTrainRoute(append(tripstack, item), targets)
-		if err == nil {
-			return route, nil
-		}
-	}
-	return nil, errors.New("search exhausted!")
-
-}
-
 func GetAllReachableStations(source OSMTransportStop) (*[]OSMTransportStop, error) {
 	var query = fmt.Sprintf(`[out:json];
 			node(%v) -> .startPoint;
@@ -135,40 +89,57 @@ func GetAllReachableStations(source OSMTransportStop) (*[]OSMTransportStop, erro
 
 func FindTrainRoute(from string, to string) ErrResponse {
 
-	startPoints, err := GetNamedStations(from)
+	var titleCache *map[string][]*OSMTransportStop
 
-	if err != nil {
-		panic(err)
-	}
-	endPoints, err := GetNamedStations(to)
+	if len(trainStopsCache.stops) != 0 {
+		titleCache = &trainStopsCache.byTitle
 
-	if err != nil {
-		panic(err)
+	} else {
+		trainStops, err := GetAllRailwayStops()
+		if err != nil {
+			return ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
+		}
+		trainStopsCache.SetStops(trainStops)
+		titleCache = &trainStopsCache.byTitle
 	}
+
+	startPoints := (*titleCache)[TrimStopSuffix(from)]
+	endPoints := (*titleCache)[TrimStopSuffix(to)]
 
 	fmt.Println(startPoints)
-	//targetPoint := (*pts)[1]
+	fmt.Println(endPoints)
 
-	center_end := Center(*endPoints)
+	center_end := Center(endPoints)
 
-	for _, start := range *startPoints {
+	queue := make(TransportSearchQueue, len(startPoints))
+
+	for i, start := range startPoints {
 
 		base_dist := Haversine(start.Latitude(), start.Longtitude(), center_end[0], center_end[1])
 
-		fmt.Println(base_dist)
+		tripstack := []OSMTransportStop{*start}
 
-		tripstack := []OSMTransportStop{start}
-
-		route, err := SearchTrainRoute(tripstack, *endPoints)
-
-		fmt.Println("ROUTE: ======")
-		for idx, stop := range route {
-			fmt.Printf("[%v] %v \n", idx, stop)
-		}
-		fmt.Println(err)
+		queue[i] = &TransportSearchItem{CurrentTrip: tripstack, Distances: []float64{base_dist}, index: i}
 
 	}
+	heap.Init(&queue)
 
-	return ErrResponse{HTTPStatusCode: 200, StatusText: "Failed successfully"}
+	for queue.Len() > 0 {
+
+		item := heap.Pop(&queue).(*TransportSearchItem)
+
+		//fmt.Println(len(queue), item.Distances[len(item.Distances)-1], item.CurrentTrip[len(item.CurrentTrip)-1].Tags.Name)
+		route, err := SearchTrainRoute(*item, endPoints, &queue)
+
+		if err != nil {
+			panic(err)
+		}
+		if route != nil {
+			fmt.Println(route)
+			break
+		}
+	}
+
+	return ErrResponse{HTTPStatusCode: 200, StatusText: "Search exhausted"}
 
 }
