@@ -76,8 +76,8 @@ type CityParkingQuery struct {
 			Minlon float64 `json:"minlon"`
 			Maxlat float64 `json:"maxlat"`
 			Maxlon float64 `json:"maxlon"`
-		} `json:"bounds,omitempty"`
-		Nodes    []interface{} `json:"nodes,omitempty"`
+		} `json:"bounds"`
+		Nodes    []any `json:"nodes,omitempty"`
 		Geometry []struct {
 			Lat float64 `json:"lat"`
 			Lon float64 `json:"lon"`
