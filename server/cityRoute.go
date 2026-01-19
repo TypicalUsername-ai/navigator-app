@@ -28,10 +28,12 @@ func GetCityRoute(w http.ResponseWriter, r *http.Request) {
 func FindCityRoute(city string, from string, to string) ErrResponse {
 
 	var titleCache map[string][]*OSMTransportStop
+	var idCache map[int]*OSMTransportStop
 
 	cached := cityStopsCache.GetStops(city)
 	if cached != nil {
 		titleCache = cached.byTitle
+		idCache = cached.byId
 
 	} else {
 		cityStops, err := GetAllCityStops(city)
@@ -39,7 +41,9 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 			return ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
 		}
 		cityStopsCache.SetStops(city, cityStops)
-		titleCache = cityStopsCache.GetStops(city).byTitle
+		cache := cityStopsCache.GetStops(city)
+		titleCache = cache.byTitle
+		idCache = cache.byId
 	}
 
 	startPoints := titleCache[TrimStopSuffix(from)]
@@ -63,6 +67,8 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 	}
 	heap.Init(&queue)
 
+	var foundRoute TransportSearchItem
+
 	for queue.Len() > 0 {
 		item := heap.Pop(&queue).(*TransportSearchItem)
 		//fmt.Println(len(queue), item.Distances[len(item.Distances)-1], item.CurrentTrip[len(item.CurrentTrip)-1].Tags.Name)
@@ -72,10 +78,25 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 		}
 		if route != nil {
 			fmt.Println(route)
+			foundRoute = *route
 			break
 		}
 
 	}
+
+	lineData := make([][]LineConnection, len(foundRoute.CurrentTrip)-1)
+
+	for ind := range len(foundRoute.CurrentTrip) - 1 {
+		startName := foundRoute.CurrentTrip[ind].Tags.Name
+		endName := foundRoute.CurrentTrip[ind+1].Tags.Name
+		data, err := GetConnections(startName, endName, idCache)
+		if err != nil {
+			panic(err)
+		}
+		lineData[ind] = data
+	}
+
+	fmt.Println(lineData)
 
 	//route, err := SearchCityRoute(tripstack, *endPoints, city)
 	//fmt.Println(err)

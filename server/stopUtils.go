@@ -132,6 +132,109 @@ func GetAllCityStops(city string) ([]OSMTransportStop, error) {
 	return stopsData.Elements, nil
 }
 
+type LineConnection struct {
+	Line    string
+	From    string
+	To      string
+	Type    string
+	StopsNo int
+}
+
+func GetConnections(startName, endName string, idCache map[int]*OSMTransportStop) ([]LineConnection, error) {
+	var query = fmt.Sprintf(`[out:json];node["name"="%v"]["public_transport"="stop_position"] -> .p1;node["name"="%v"]["public_transport"="stop_position"] -> .p2;rel(bn.p1)(bn.p2);out geom;`, startName, endName)
+
+	response, err := http.Get(overpass_api_url + url.QueryEscape(query))
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("non-200 response [%v]", response.StatusCode)
+	}
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	linesData := StopConnectionQuery{}
+
+	err = json.Unmarshal(bodyBytes, &linesData)
+	if err != nil {
+		return nil, err
+	}
+
+	var correctDirLines []LineConnection
+
+	for _, line := range linesData.Elements {
+		fmt.Println(line.Tags.Name)
+		flag := false
+		stopCount := 0
+		for _, el := range line.Members {
+			if el.Role != "stop" {
+				continue
+			}
+			stopName := TrimStopSuffix(idCache[el.Ref].Tags.Name)
+			if flag == true {
+				stopCount += 1
+			}
+			if flag == true && stopName == TrimStopSuffix(endName) {
+				break
+
+			} else if stopName == TrimStopSuffix(startName) {
+				flag = true
+			}
+		}
+		if stopCount > 0 {
+			correctDirLines = append(correctDirLines, LineConnection{Line: line.Tags.Ref, From: line.Tags.From, To: line.Tags.To, Type: line.Tags.Route, StopsNo: stopCount})
+		}
+	}
+
+	return correctDirLines, nil
+}
+
+type OSMTransportLine struct {
+	Type   string `json:"type"`
+	ID     int    `json:"id"`
+	Bounds struct {
+		Minlat float64 `json:"minlat"`
+		Minlon float64 `json:"minlon"`
+		Maxlat float64 `json:"maxlat"`
+		Maxlon float64 `json:"maxlon"`
+	} `json:"bounds"`
+	Members []struct {
+		Type     string  `json:"type"`
+		Ref      int     `json:"ref"`
+		Role     string  `json:"role"`
+		Lat      float64 `json:"lat,omitempty"`
+		Lon      float64 `json:"lon,omitempty"`
+		Geometry []struct {
+			Lat float64 `json:"lat"`
+			Lon float64 `json:"lon"`
+		} `json:"geometry,omitempty"`
+	} `json:"members"`
+	Tags struct {
+		Bicycle                string `json:"bicycle"`
+		CheckDate              string `json:"check_date"`
+		From                   string `json:"from"`
+		Name                   string `json:"name"`
+		Network                string `json:"network"`
+		NetworkWikidata        string `json:"network:wikidata"`
+		Operator               string `json:"operator"`
+		OperatorStartDate      string `json:"operator:start_date"`
+		OperatorWikidata       string `json:"operator:wikidata"`
+		PublicTransportVersion string `json:"public_transport:version"`
+		Ref                    string `json:"ref"`
+		Route                  string `json:"route"`
+		To                     string `json:"to"`
+		Type                   string `json:"type"`
+		Wheelchair             string `json:"wheelchair"`
+	} `json:"tags"`
+}
+
+type StopConnectionQuery struct {
+	*OsmResponseHeaders
+	Elements []OSMTransportLine
+}
+
 type CityStopsCacheEntry struct {
 	updateTime time.Time
 	stops      []OSMTransportStop
