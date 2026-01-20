@@ -20,12 +20,24 @@ func GetCityRoute(w http.ResponseWriter, r *http.Request) {
 	if from == nil || to == nil {
 		render.Render(w, r, &ErrResponse{HTTPStatusCode: 401, StatusText: "Missing required parameters (from, to)"})
 	} else {
-		route := FindCityRoute(currentCity, from[0], to[0])
-		render.Render(w, r, &route)
+		route, err := FindCityRoute(currentCity, from[0], to[0])
+		if err != nil {
+			render.Render(w, r, err)
+		} else {
+			render.Render(w, r, route)
+		}
 	}
 }
 
-func FindCityRoute(city string, from string, to string) ErrResponse {
+type CityRouteResponse struct {
+	Connections [][]LineConnection
+}
+
+func (cr *CityRouteResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func FindCityRoute(city string, from string, to string) (*CityRouteResponse, *ErrResponse) {
 
 	var titleCache map[string][]*OSMTransportStop
 	var idCache map[int]*OSMTransportStop
@@ -38,7 +50,7 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 	} else {
 		cityStops, err := GetAllCityStops(city)
 		if err != nil {
-			return ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
+			return nil, &ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
 		}
 		cityStopsCache.SetStops(city, cityStops)
 		cache := cityStopsCache.GetStops(city)
@@ -95,13 +107,7 @@ func FindCityRoute(city string, from string, to string) ErrResponse {
 		}
 		lineData[ind] = data
 	}
-
-	fmt.Println(lineData)
-
-	//route, err := SearchCityRoute(tripstack, *endPoints, city)
-	//fmt.Println(err)
-
-	return ErrResponse{HTTPStatusCode: 200, StatusText: "Search Exhausted"}
+	return &CityRouteResponse{Connections: lineData}, nil
 }
 
 type OSMGeometry interface {

@@ -133,11 +133,11 @@ func GetAllCityStops(city string) ([]OSMTransportStop, error) {
 }
 
 type LineConnection struct {
-	Line    string
-	From    string
-	To      string
-	Type    string
-	StopsNo int
+	Line string   `json:"lineNo"`
+	From string   `json:"from"`
+	To   string   `json:"to"`
+	Type string   `json:"transportType"`
+	Via  []string `json:"viaStops"`
 }
 
 func GetConnections(startName, endName string, idCache map[int]*OSMTransportStop) ([]LineConnection, error) {
@@ -165,26 +165,25 @@ func GetConnections(startName, endName string, idCache map[int]*OSMTransportStop
 	var correctDirLines []LineConnection
 
 	for _, line := range linesData.Elements {
-		fmt.Println(line.Tags.Name)
+		fmt.Println(line.Tags.Name, startName, TrimStopSuffix(endName))
 		flag := false
-		stopCount := 0
+		vias := []string{}
 		for _, el := range line.Members {
-			if el.Role != "stop" {
+			if !strings.HasPrefix(el.Role, "stop") {
 				continue
 			}
 			stopName := TrimStopSuffix(idCache[el.Ref].Tags.Name)
-			if flag == true {
-				stopCount += 1
-			}
-			if flag == true && stopName == TrimStopSuffix(endName) {
-				break
-
-			} else if stopName == TrimStopSuffix(startName) {
+			if stopName == TrimStopSuffix(startName) {
 				flag = true
+			} else if stopName == TrimStopSuffix(endName) {
+				break
+			} else if flag == true {
+				vias = append(vias, stopName)
 			}
 		}
-		if stopCount > 0 {
-			correctDirLines = append(correctDirLines, LineConnection{Line: line.Tags.Ref, From: line.Tags.From, To: line.Tags.To, Type: line.Tags.Route, StopsNo: stopCount})
+
+		if flag {
+			correctDirLines = append(correctDirLines, LineConnection{Line: line.Tags.Ref, From: line.Tags.From, To: line.Tags.To, Type: line.Tags.Route, Via: vias})
 		}
 	}
 
