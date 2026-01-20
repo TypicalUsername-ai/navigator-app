@@ -18,8 +18,12 @@ func GetTrainRoute(w http.ResponseWriter, r *http.Request) {
 	if query["from"] == nil || query["to"] == nil {
 		render.Render(w, r, &ErrResponse{HTTPStatusCode: 401, StatusText: "Missing required parameters (from, to)"})
 	} else {
-		routes := FindTrainRoute(query["from"][0], query["to"][0])
-		render.Render(w, r, &routes)
+		routes, err := FindTrainRoute(query["from"][0], query["to"][0])
+		if err != nil {
+			render.Render(w, r, err)
+		} else {
+			render.Render(w, r, routes)
+		}
 	}
 
 }
@@ -87,20 +91,23 @@ func GetAllReachableStations(source OSMTransportStop) (*[]OSMTransportStop, erro
 	return &stopsData.Elements, nil
 }
 
-func FindTrainRoute(from string, to string) ErrResponse {
+func FindTrainRoute(from string, to string) (*RouteResponse, *ErrResponse) {
 
 	var titleCache *map[string][]*OSMTransportStop
+	var idCache *map[int]*OSMTransportStop
 
 	if len(trainStopsCache.stops) != 0 {
 		titleCache = &trainStopsCache.byTitle
+		idCache = &trainStopsCache.byId
 
 	} else {
 		trainStops, err := GetAllRailwayStops()
 		if err != nil {
-			return ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
+			return nil, &ErrResponse{HTTPStatusCode: 500, StatusText: err.Error()}
 		}
 		trainStopsCache.SetStops(trainStops)
 		titleCache = &trainStopsCache.byTitle
+		idCache = &trainStopsCache.byId
 	}
 
 	startPoints := (*titleCache)[TrimStopSuffix(from)]
@@ -124,6 +131,8 @@ func FindTrainRoute(from string, to string) ErrResponse {
 	}
 	heap.Init(&queue)
 
+	var foundRoute TransportSearchItem
+
 	for queue.Len() > 0 {
 
 		item := heap.Pop(&queue).(*TransportSearchItem)
@@ -135,11 +144,20 @@ func FindTrainRoute(from string, to string) ErrResponse {
 			panic(err)
 		}
 		if route != nil {
-			fmt.Println(route)
+			foundRoute = *route
 			break
 		}
 	}
+	lineData := make([][]LineConnection, len(foundRoute.CurrentTrip)-1)
 
-	return ErrResponse{HTTPStatusCode: 200, StatusText: "Search exhausted"}
-
+	for ind := range len(foundRoute.CurrentTrip) - 1 {
+		startName := foundRoute.CurrentTrip[ind].Tags.Name
+		endName := foundRoute.CurrentTrip[ind+1].Tags.Name
+		data, err := GetConnections(startName, endName, *idCache)
+		if err != nil {
+			panic(err)
+		}
+		lineData[ind] = data
+	}
+	return &RouteResponse{Connections: lineData}, nil
 }

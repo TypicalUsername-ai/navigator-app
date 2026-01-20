@@ -29,15 +29,15 @@ func GetCityRoute(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type CityRouteResponse struct {
+type RouteResponse struct {
 	Connections [][]LineConnection
 }
 
-func (cr *CityRouteResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (cr *RouteResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func FindCityRoute(city string, from string, to string) (*CityRouteResponse, *ErrResponse) {
+func FindCityRoute(city string, from string, to string) (*RouteResponse, *ErrResponse) {
 
 	var titleCache map[string][]*OSMTransportStop
 	var idCache map[int]*OSMTransportStop
@@ -107,7 +107,7 @@ func FindCityRoute(city string, from string, to string) (*CityRouteResponse, *Er
 		}
 		lineData[ind] = data
 	}
-	return &CityRouteResponse{Connections: lineData}, nil
+	return &RouteResponse{Connections: lineData}, nil
 }
 
 type OSMGeometry interface {
