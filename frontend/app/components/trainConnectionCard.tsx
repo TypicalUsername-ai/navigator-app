@@ -12,40 +12,56 @@ import {
   Footprints,
   BusFront,
   TramFront,
+  TrainFront,
   Route,
   SquareM,
   SquareArrowDownRight,
   MoveRight,
   Repeat,
 } from "lucide-react";
-export default function TrainConnectionCard() {
+import type { LineConnection } from "~/pages/trains/trainSearchPage";
+
+export default function TrainConnectionCard({
+  connections,
+  onClick,
+}: {
+  connections: LineConnection[];
+  onClick?: () => void;
+}) {
   return (
-    <Card className="aspect-5/1 gap-1 p-2">
+    <Card
+      className={`gap-1 p-2 ${onClick ? "cursor-pointer transition-all hover:shadow-md hover:border-blue-300" : ""}`}
+      onClick={onClick}
+    >
       <CardContent className="items-between flex h-full w-full flex-row p-0">
-        <div className="m-2 place-self-end text-lg font-bold lg:text-3xl">
-          18min
-        </div>
-        <div className="flex flex-row items-center gap-2">
-          <BusLine nr={238} />
-          <TramLine nr={23} />
+        <div className="flex flex-row items-center gap-2 flex-wrap">
+          {connections.map((connection, index) => (
+            <TrainLine key={index} nr={connection.lineNo} />
+          ))}
         </div>
       </CardContent>
       <CardFooter className="items-between flex flex-row gap-1 overflow-scroll">
-        <Walk distance={400} />
-        <Stop name="Jordanowska" />
-        <Stops stops={10} />
-        <Stop name="Rondo Matecznego 1" />
-        <Walk distance={200} />
+        {connections.map((connection, connectionIndex) => (
+          <div key={connectionIndex} className="flex flex-row gap-1 items-center">
+            <Stop name={connection.from} />
+            {connection.viaStops && connection.viaStops.length > 0 && (
+              <Stops stops={connection.viaStops.length} />
+            )}
+            {connectionIndex === connections.length - 1 && (
+              <Stop name={connection.to} />
+            )}
+          </div>
+        ))}
       </CardFooter>
     </Card>
   );
 }
 
-function Stop({ name }: { string }) {
+function Stop({ name }: { name: string }) {
   return <Badge className="overflow-hidden px-1 text-ellipsis">{name}</Badge>;
 }
 
-function Walk({ distance }: { number }) {
+function Walk({ distance }: { distance: number }) {
   return (
     <div className="flex flex-col items-center">
       <Footprints size={16} />
@@ -54,7 +70,7 @@ function Walk({ distance }: { number }) {
   );
 }
 
-function Stops({ stops }: { number }) {
+function Stops({ stops }: { stops: number }) {
   return (
     <div className="flex flex-col items-center">
       <Route size={24} />
@@ -63,22 +79,33 @@ function Stops({ stops }: { number }) {
   );
 }
 
-function BusLine({ nr }: { number }) {
+function TrainLine({ nr }: { nr: string }) {
   return (
-    <div className="flex flex-row gap-1">
-      <BusFront size={32} />
-      <Badge variant="ou1tline" className="border-primary rounded-sm border-1">
+    <div className="flex flex-row gap-1 items-center">
+      <TrainFront size={32} />
+      <Badge variant="outline" className="border-primary rounded-sm border-1">
         {nr}
       </Badge>
     </div>
   );
 }
 
-function TramLine({ nr }: { number }) {
+function BusLine({ nr }: { nr: number }) {
+  return (
+    <div className="flex flex-row gap-1">
+      <BusFront size={32} />
+      <Badge variant="outline" className="border-primary rounded-sm border-1">
+        {nr}
+      </Badge>
+    </div>
+  );
+}
+
+function TramLine({ nr }: { nr: number }) {
   return (
     <div className="flex flex-row gap-1">
       <TramFront size={32} />
-      <Badge variant="ou1tline" className="border-primary rounded-sm border-1">
+      <Badge variant="outline" className="border-primary rounded-sm border-1">
         {nr}
       </Badge>
     </div>
