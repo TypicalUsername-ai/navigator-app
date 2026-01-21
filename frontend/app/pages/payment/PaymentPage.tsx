@@ -84,7 +84,7 @@ export default function PaymentPage() {
                     Total:
                   </span>
                   <span className="text-2xl font-bold text-black md:text-3xl">
-                    ${ticketData.total.toFixed(2)}
+                    {ticketData.total.toFixed(2)} zł
                   </span>
                 </div>
               </div>

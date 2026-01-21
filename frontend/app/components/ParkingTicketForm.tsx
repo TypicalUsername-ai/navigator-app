@@ -60,7 +60,7 @@ export default function ParkingTicketForm({
         { label: "Address", value: selectedParking.address },
         { label: "Plate Number", value: plateNumber },
         { label: "Duration", value: `${parkingHours} hour(s)` },
-        { label: "Rate", value: `$${selectedParking.price.toFixed(2)}/hr` },
+        { label: "Rate", value: `${selectedParking.price.toFixed(2)} zł/hr` },
       ],
     };
 
@@ -115,9 +115,9 @@ export default function ParkingTicketForm({
             </div>
             <div className="flex justify-between gap-2">
               <span className="text-gray-600">Rate:</span>
-              <span className="font-semibold">
-                ${selectedParking.price.toFixed(2)}/hr
-              </span>
+                <span className="font-semibold">
+                  {selectedParking.price.toFixed(2)} zł/hr
+                </span>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function ParkingTicketForm({
               Total:
             </span>
             <span className="text-base font-bold text-black sm:text-lg md:text-xl">
-              ${totalCost.toFixed(2)}
+              {totalCost.toFixed(2)} zł
             </span>
           </div>
         </div>
